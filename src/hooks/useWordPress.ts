@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   getPosts,
   getPostBySlug,
@@ -25,13 +25,14 @@ type FetchState<T> = {
 const memoryCache = new Map<string, { data: unknown; updatedAt: number }>();
 const DEFAULT_STALE_MS = 60_000;
 
-function useFetch<T>(
-  fetcher: () => Promise<T>,
-  deps: unknown[] = [],
-  options: { cacheKey?: string; staleMs?: number } = {}
-) {
+function useFetch<T>(fetcher: () => Promise<T>, options: { cacheKey?: string; staleMs?: number } = {}) {
   const cacheKey = options.cacheKey;
   const staleMs = options.staleMs ?? DEFAULT_STALE_MS;
+  const fetcherRef = useRef(fetcher);
+
+  useEffect(() => {
+    fetcherRef.current = fetcher;
+  }, [fetcher]);
 
   const initialCached = useMemo(() => {
     if (!cacheKey) return null;
@@ -70,7 +71,7 @@ function useFetch<T>(
       }));
 
       try {
-        const data = await fetcher();
+        const data = await fetcherRef.current();
         if (cacheKey) {
           memoryCache.set(cacheKey, { data, updatedAt: Date.now() });
         }
@@ -84,12 +85,12 @@ function useFetch<T>(
         }));
       }
     },
-    [cacheKey, fetcher, staleMs]
+    [cacheKey, staleMs]
   );
 
   useEffect(() => {
     void load();
-  }, [load, ...deps]);
+  }, [load, cacheKey, staleMs]);
 
   return { ...state, refetch: () => load(true) };
 }
@@ -107,7 +108,6 @@ export function usePosts(options: UsePostsOptions = {}) {
       enabled
         ? getPosts({ ...params, page })
         : Promise.resolve({ posts: [], total: 0, totalPages: 0 }),
-    [enabled, page, JSON.stringify(params)],
     { cacheKey: `posts:${JSON.stringify({ ...params, page, enabled })}` }
   );
 
@@ -124,7 +124,6 @@ export function usePosts(options: UsePostsOptions = {}) {
 export function usePost(slug: string) {
   return useFetch<WPPost | null>(
     () => (slug ? getPostBySlug(slug) : Promise.resolve(null)),
-    [slug],
     { cacheKey: `post:${slug}` }
   );
 }
@@ -132,19 +131,17 @@ export function usePost(slug: string) {
 export function usePage(slug: string) {
   return useFetch<WPPage | null>(
     () => (slug ? getPageBySlug(slug) : Promise.resolve(null)),
-    [slug],
     { cacheKey: `page:${slug}` }
   );
 }
 
 export function useACFOptions() {
-  return useFetch<ACFOptions>(() => getACFOptions(), [], { cacheKey: "acf-options", staleMs: 120_000 });
+  return useFetch<ACFOptions>(() => getACFOptions(), { cacheKey: "acf-options", staleMs: 120_000 });
 }
 
 export function useACFPost(postId: number | null) {
   return useFetch<Record<string, unknown>>(
     () => (postId ? getACFForPost(postId) : Promise.resolve({})),
-    [postId],
     { cacheKey: `acf-post:${postId ?? "none"}` }
   );
 }
@@ -153,20 +150,18 @@ export function useCPT<T extends Record<string, unknown>>(cptSlug: string, param
   const paramsKey = JSON.stringify(params);
   return useFetch<T[]>(
     () => (cptSlug ? getCPT<T>(cptSlug, params) : Promise.resolve([])),
-    [cptSlug, paramsKey],
     { cacheKey: `cpt:${cptSlug}:${paramsKey}` }
   );
 }
 
 export function useCategories() {
-  return useFetch(() => getCategories(), [], { cacheKey: "categories" });
+  return useFetch(() => getCategories(), { cacheKey: "categories" });
 }
 
 export function useTaxonomyTerms(taxonomy: string, params: QueryParams = {}) {
   const paramsKey = JSON.stringify(params);
   return useFetch<WPTaxonomyTerm[]>(
     () => (taxonomy ? getTaxonomyTerms(taxonomy, params) : Promise.resolve([])),
-    [taxonomy, paramsKey],
     { cacheKey: `taxonomy:${taxonomy}:${paramsKey}` }
   );
 }

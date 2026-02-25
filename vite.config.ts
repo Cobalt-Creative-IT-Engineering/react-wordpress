@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
+  const target = (env.VITE_WP_URL ?? "https://votre-wordpress.com").replace(/\/+$/, "");
 
   return {
     plugins: [react()],
@@ -11,7 +12,7 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       proxy: {
         "/wp-json": {
-          target: env.VITE_WP_URL ?? "https://votre-wordpress.com",
+          target,
           changeOrigin: true,
           secure: false,
         },
