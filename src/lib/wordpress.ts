@@ -17,6 +17,13 @@ export interface WPTerm {
   slug: string;
 }
 
+export interface WPTaxonomyTerm {
+  id: number;
+  name: string;
+  slug: string;
+  taxonomy?: string;
+}
+
 export interface WPPost {
   id: number;
   slug: string;
@@ -200,6 +207,14 @@ export async function getCategories(): Promise<WPTerm[]> {
 
 export async function getTags(): Promise<WPTerm[]> {
   return fetcher<WPTerm[]>(`${API}/tags?per_page=100`);
+}
+
+export async function getTaxonomyTerms(
+  taxonomy: string,
+  params: QueryParams = {}
+): Promise<WPTaxonomyTerm[]> {
+  const url = `${API}/${taxonomy}?${buildParams({ perPage: 100, ...params }).toString()}`;
+  return fetcher<WPTaxonomyTerm[]>(url);
 }
 
 export async function getMenu(menuSlug: string): Promise<WPMenuItem[]> {

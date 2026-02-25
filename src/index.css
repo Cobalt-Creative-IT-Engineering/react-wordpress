@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0e0e0e;
-  --surface: #171717;
-  --surface-2: #222222;
-  --surface-3: #2d2d2d;
-  --border: #2f2f2f;
-  --text-primary: #f0ece4;
-  --text-secondary: #a09990;
-  --text-muted: #5a5450;
-  --accent: #c8945a;
-  --accent-hover: #d9a872;
+  --bg: #0b0a0a;
+  --surface: #151213;
+  --surface-2: #1f1a1c;
+  --surface-3: #2a2427;
+  --border: #2f2a2d;
+  --text-primary: #f7f4f2;
+  --text-secondary: #c8c1bd;
+  --text-muted: #7f7672;
+  --accent: #ff6a3d;
+  --accent-hover: #ff855f;
   --font-display: "Playfair Display", Georgia, serif;
   --font-body: "DM Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
@@ -172,6 +172,144 @@ a {
 
   .hero-ctas {
     @apply flex flex-wrap items-center justify-center gap-3;
+  }
+
+  .festival-hero {
+    @apply relative rounded-2xl overflow-hidden min-h-[70vh] flex items-center;
+    background: radial-gradient(1200px circle at 20% 20%, #2a1e1c, transparent),
+      radial-gradient(1000px circle at 80% 10%, #2c2230, transparent),
+      var(--surface);
+  }
+
+  .hero-video {
+    @apply absolute inset-0 w-full h-full object-cover;
+    filter: saturate(1.1) contrast(1.05);
+  }
+
+  .hero-fallback {
+    background: linear-gradient(120deg, #2a1e1c, #1b1619 55%, #101012 100%);
+  }
+
+  .hero-overlay {
+    @apply absolute inset-0;
+    background: linear-gradient(120deg, rgba(11, 10, 10, 0.7), rgba(11, 10, 10, 0.2));
+  }
+
+  .hero-logo {
+    @apply w-24 h-24 object-contain mb-6;
+  }
+
+  .hero-text-block {
+    @apply max-w-xl;
+  }
+
+  .hero-kicker {
+    @apply uppercase tracking-[0.35em] text-xs mb-4;
+    color: var(--text-muted);
+  }
+
+  .festival-home .hero-title {
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+  }
+
+  .program-filters {
+    @apply flex flex-col gap-4 mb-8;
+  }
+
+  .filter-group {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .filter-label {
+    @apply text-xs uppercase tracking-[0.3em] mr-2;
+    color: var(--text-muted);
+  }
+
+  .filter-chip {
+    @apply px-3 py-1 rounded-full text-sm border transition-colors;
+    border-color: var(--border);
+    color: var(--text-secondary);
+    background: transparent;
+  }
+
+  .filter-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .filter-chip.active {
+    background: var(--accent);
+    color: #120b09;
+    border-color: var(--accent);
+  }
+
+  .program-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+
+  .program-card {
+    @apply rounded-xl border p-5;
+    background: var(--surface);
+    border-color: var(--border);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .program-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+
+  .program-artist {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    margin: 0 0 0.75rem;
+    color: var(--text-primary);
+  }
+
+  .program-meta {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .tag-muted {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--text-secondary);
+    border-color: color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  .two-col {
+    @apply grid gap-8;
+    grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+  }
+
+  .side-links {
+    @apply flex flex-col gap-3;
+    position: sticky;
+    top: 6rem;
+    align-self: start;
+  }
+
+  .side-link {
+    @apply text-sm;
+    color: var(--text-secondary);
+  }
+
+  .side-link:hover {
+    color: var(--accent);
+  }
+
+  .content-column {
+    @apply min-w-0;
+  }
+
+  .ticket-wrapper {
+    @apply rounded-2xl overflow-hidden border;
+    border-color: var(--border);
+    background: var(--surface);
+  }
+
+  .ticket-frame {
+    @apply w-full min-h-[70vh] border-0;
   }
 
   .section {

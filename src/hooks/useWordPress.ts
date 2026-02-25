@@ -7,10 +7,12 @@ import {
   getACFForPost,
   getCPT,
   getCategories,
+  getTaxonomyTerms,
   type WPPost,
   type WPPage,
   type ACFOptions,
   type QueryParams,
+  type WPTaxonomyTerm,
 } from "../lib/wordpress";
 
 type FetchState<T> =
@@ -97,4 +99,11 @@ export function useCPT<T extends Record<string, unknown>>(cptSlug: string, param
 
 export function useCategories() {
   return useFetch(() => getCategories(), []);
+}
+
+export function useTaxonomyTerms(taxonomy: string, params: QueryParams = {}) {
+  return useFetch<WPTaxonomyTerm[]>(
+    () => (taxonomy ? getTaxonomyTerms(taxonomy, params) : Promise.resolve([])),
+    [taxonomy, JSON.stringify(params)]
+  );
 }
