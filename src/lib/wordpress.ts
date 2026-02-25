@@ -1,4 +1,4 @@
-export const WP_BASE_URL = import.meta.env.VITE_WP_URL ?? "https://votre-wordpress.com";
+export const WP_BASE_URL = (import.meta.env.VITE_WP_URL ?? "https://votre-wordpress.com").replace(/\/+$/, "");
 
 const API = `${WP_BASE_URL}/wp-json/wp/v2`;
 const ACF_API = `${WP_BASE_URL}/wp-json/acf/v3`;

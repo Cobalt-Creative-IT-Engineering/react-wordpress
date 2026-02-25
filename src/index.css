@@ -3,16 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0b0a0a;
-  --surface: #151213;
-  --surface-2: #1f1a1c;
-  --surface-3: #2a2427;
-  --border: #2f2a2d;
-  --text-primary: #f7f4f2;
-  --text-secondary: #c8c1bd;
-  --text-muted: #7f7672;
-  --accent: #ff6a3d;
-  --accent-hover: #ff855f;
+  --bg: #f7f4ef;
+  --surface: #ffffff;
+  --surface-2: #f3f6fb;
+  --surface-3: #eaf0f8;
+  --border: #d9e1ed;
+  --text-primary: #102a56;
+  --text-secondary: #2c3e5a;
+  --text-muted: #5f708b;
+  --accent: #123a7a;
+  --accent-hover: #1b4f9c;
+  --accent-soft: #dfe9f8;
   --font-display: "Playfair Display", Georgia, serif;
   --font-body: "DM Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
@@ -27,17 +28,47 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
   margin: 0;
-  background-color: var(--bg);
+  background: radial-gradient(1200px circle at 10% 10%, #fff8ef, transparent),
+    radial-gradient(900px circle at 90% 0%, #edf5ff, transparent),
+    var(--bg);
   color: var(--text-primary);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image:
+    radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.55) 0 1px, transparent 1px),
+    radial-gradient(circle at 75% 80%, rgba(16, 42, 86, 0.08) 0 1px, transparent 1px);
+  background-size: 3px 3px, 5px 5px;
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(560px 300px at 8% 14%, rgba(255, 177, 96, 0.25), transparent 68%),
+    radial-gradient(520px 280px at 90% 8%, rgba(145, 203, 255, 0.22), transparent 70%),
+    radial-gradient(480px 300px at 20% 92%, rgba(149, 219, 167, 0.2), transparent 72%),
+    radial-gradient(460px 260px at 86% 84%, rgba(255, 214, 122, 0.18), transparent 70%);
+  filter: blur(8px);
+  z-index: -1;
 }
 
 a {
@@ -57,13 +88,14 @@ a {
 @layer components {
   .app {
     @apply min-h-screen flex flex-col;
+    position: relative;
   }
 
   .nav-wrapper {
     @apply sticky top-0 z-50 border-b;
-    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    background: rgba(255, 255, 255, 0.92);
     border-color: var(--border);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(10px);
   }
 
   .nav-inner {
@@ -74,7 +106,7 @@ a {
     font-family: var(--font-display);
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #151210;
     letter-spacing: -0.02em;
   }
 
@@ -83,10 +115,12 @@ a {
   }
 
   .nav-link {
+    text-transform: uppercase;
     font-size: 0.875rem;
+    font-weight: 600;
     color: var(--text-secondary);
     transition: color 0.2s;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.11em;
   }
 
   .nav-link:hover {
@@ -98,7 +132,7 @@ a {
   }
 
   .ham-line {
-    @apply block w-5 h-px transition-all duration-200;
+    @apply block w-5 h-px transition-transform duration-200;
     background: var(--text-primary);
   }
 
@@ -118,16 +152,21 @@ a {
     @apply flex-1 max-w-6xl mx-auto w-full px-6 py-12;
   }
 
+  .festival-home.page-content {
+    @apply py-8;
+  }
+
   .page-header {
-    @apply mb-10;
+    @apply mb-12 pb-6;
+    border-bottom: 1px solid var(--border);
   }
 
   .page-title {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(2.6rem, 6vw, 5.1rem);
     font-weight: 700;
     color: var(--text-primary);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.045em;
     line-height: 1.1;
     margin: 0 0 0.5rem;
   }
@@ -135,6 +174,7 @@ a {
   .page-subtitle {
     color: var(--text-secondary);
     margin: 0;
+    max-width: 62ch;
   }
 
   .hero {
@@ -176,9 +216,11 @@ a {
 
   .festival-hero {
     @apply relative rounded-2xl overflow-hidden min-h-[70vh] flex items-center;
-    background: radial-gradient(1200px circle at 20% 20%, #2a1e1c, transparent),
-      radial-gradient(1000px circle at 80% 10%, #2c2230, transparent),
+    background: radial-gradient(1200px circle at 20% 20%, #ffeedc, transparent),
+      radial-gradient(1000px circle at 80% 10%, #e4eeff, transparent),
       var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 26px 56px rgba(22, 45, 84, 0.14);
   }
 
   .hero-video {
@@ -187,16 +229,17 @@ a {
   }
 
   .hero-fallback {
-    background: linear-gradient(120deg, #2a1e1c, #1b1619 55%, #101012 100%);
+    background: linear-gradient(120deg, #ffe7d8, #f7e8ff 55%, #e6f4ff 100%);
   }
 
   .hero-overlay {
     @apply absolute inset-0;
-    background: linear-gradient(120deg, rgba(11, 10, 10, 0.7), rgba(11, 10, 10, 0.2));
+    background: linear-gradient(120deg, rgba(16, 42, 86, 0.44), rgba(16, 42, 86, 0.07));
   }
 
   .hero-logo {
-    @apply w-24 h-24 object-contain mb-6;
+    @apply w-28 h-28 object-contain mb-6;
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.25));
   }
 
   .hero-text-block {
@@ -205,15 +248,72 @@ a {
 
   .hero-kicker {
     @apply uppercase tracking-[0.35em] text-xs mb-4;
-    color: var(--text-muted);
+    color: #fff5ef;
+  }
+
+  .festival-hero .hero-title,
+  .festival-hero .hero-sub {
+    color: #fffdfb;
+    text-shadow: 0 10px 26px rgba(9, 24, 52, 0.36);
   }
 
   .festival-home .hero-title {
-    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-size: clamp(3rem, 7vw, 5.8rem);
   }
 
   .program-filters {
     @apply flex flex-col gap-4 mb-8;
+  }
+
+  .program-intro {
+    @apply flex flex-col gap-6 rounded-2xl p-6 mb-8;
+    background: linear-gradient(120deg, #fff9f1, #edf4ff);
+    border: 1px solid var(--border);
+    box-shadow: 0 14px 30px rgba(21, 49, 92, 0.09);
+  }
+
+  .program-intro-copy {
+    @apply max-w-2xl;
+  }
+
+  .program-eyebrow {
+    @apply uppercase tracking-[0.35em] text-xs mb-3;
+    color: var(--text-muted);
+  }
+
+  .program-heading {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    margin: 0 0 0.5rem;
+  }
+
+  .program-lead {
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .program-stats {
+    @apply flex flex-wrap gap-4;
+  }
+
+  .program-stat {
+    @apply rounded-xl px-4 py-3;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    min-width: 120px;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: block;
+  }
+
+  .stat-label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
   }
 
   .filter-group {
@@ -229,7 +329,7 @@ a {
     @apply px-3 py-1 rounded-full text-sm border transition-colors;
     border-color: var(--border);
     color: var(--text-secondary);
-    background: transparent;
+    background: #ffffff;
   }
 
   .filter-chip:hover {
@@ -239,8 +339,9 @@ a {
 
   .filter-chip.active {
     background: var(--accent);
-    color: #120b09;
+    color: #fff;
     border-color: var(--accent);
+    box-shadow: 0 8px 20px rgba(18, 58, 122, 0.3);
   }
 
   .program-grid {
@@ -253,11 +354,105 @@ a {
     background: var(--surface);
     border-color: var(--border);
     transition: transform 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 14px 30px rgba(17, 44, 88, 0.08);
+  }
+
+  .program-clickable {
+    cursor: pointer;
+  }
+
+  .program-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .program-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.12), transparent 40%);
+    pointer-events: none;
+  }
+
+  .artist-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 42, 86, 0.26);
+    backdrop-filter: blur(4px);
+    display: grid;
+    place-items: center;
+    z-index: 80;
+    padding: 1rem;
+  }
+
+  .artist-modal {
+    width: min(680px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.25rem;
+    box-shadow: 0 30px 70px rgba(16, 42, 86, 0.25);
+    position: relative;
+  }
+
+  .artist-modal-close {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.75rem;
+    border: 0;
+    background: transparent;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .artist-modal-close:hover {
+    color: var(--accent);
+  }
+
+  .artist-modal-image {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 1rem;
+  }
+
+  .artist-modal-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin: 0 0 0.75rem;
+  }
+
+  .artist-modal-tags {
+    @apply flex flex-wrap gap-2 mb-4;
+  }
+
+  .artist-modal-meta {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .artist-modal-meta p {
+    margin: 0.2rem 0;
+  }
+
+  .artist-modal-content {
+    color: var(--text-secondary);
+  }
+
+  .artist-modal-empty {
+    color: var(--text-muted);
+    margin: 0;
   }
 
   .program-card:hover {
     transform: translateY(-2px);
     border-color: var(--accent);
+    box-shadow: 0 18px 36px rgba(17, 44, 88, 0.14);
   }
 
   .program-artist {
@@ -287,29 +482,90 @@ a {
     position: sticky;
     top: 6rem;
     align-self: start;
+    padding: 1rem;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
   }
 
   .side-link {
     @apply text-sm;
     color: var(--text-secondary);
+    padding: 0.25rem 0.35rem;
+    border-radius: 8px;
   }
 
   .side-link:hover {
     color: var(--accent);
+    background: #f8f2ec;
   }
 
   .content-column {
     @apply min-w-0;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+
+  .hard-sections {
+    @apply flex flex-col gap-6 mb-8;
+  }
+
+  .hard-section h2 {
+    font-family: var(--font-display);
+    margin: 0 0 0.5rem;
   }
 
   .ticket-wrapper {
     @apply rounded-2xl overflow-hidden border;
     border-color: var(--border);
     background: var(--surface);
+    box-shadow: 0 20px 50px rgba(31, 20, 12, 0.1);
   }
 
   .ticket-frame {
     @apply w-full min-h-[70vh] border-0;
+  }
+
+  .ticket-info {
+    @apply flex flex-col gap-6 mb-10;
+  }
+
+  .ticket-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    margin: 0 0 0.5rem;
+  }
+
+  .ticket-copy {
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .ticket-grid {
+    @apply grid gap-4;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .ticket-card {
+    @apply rounded-xl p-4 border;
+    border-color: var(--border);
+    background: #ffffff;
+  }
+
+  .ticket-label {
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin: 0 0 0.5rem;
+  }
+
+  .ticket-price {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
   }
 
   .section {
@@ -331,28 +587,31 @@ a {
   }
 
   .card {
-    @apply rounded-xl border p-5 transition-all duration-300;
+    @apply rounded-xl border p-5;
     background: var(--surface);
     border-color: var(--border);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .card:hover {
     border-color: color-mix(in srgb, var(--accent) 40%, transparent);
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 18px 36px rgba(17, 44, 88, 0.12);
   }
 
   .tag {
     @apply inline-block px-2 py-0.5 rounded-md text-xs font-medium;
-    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
     color: var(--accent);
-    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
   }
 
   .btn-primary {
-    @apply inline-block px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200;
+    @apply inline-block px-6 py-3 rounded-full font-semibold text-sm;
     background: var(--accent);
-    color: #0e0e0e;
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(18, 58, 122, 0.28);
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .btn-primary:hover {
@@ -361,9 +620,11 @@ a {
   }
 
   .btn-ghost {
-    @apply inline-block px-5 py-2.5 rounded-lg font-medium text-sm border transition-all duration-200;
+    @apply inline-block px-6 py-3 rounded-full font-semibold text-sm border;
     border-color: var(--border);
     color: var(--text-secondary);
+    background: #ffffff;
+    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
   }
 
   .btn-ghost:hover {
