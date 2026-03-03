@@ -1,10 +1,10 @@
 # WordPress Headless × React + Tailwind
 
-Un projet React moderne connecté à WordPress via l'API REST, avec support natif d'ACF (Advanced Custom Fields).
+Un projet React moderne connecté à WordPress via l'API REST, avec support natif d'ACF (Advanced Custom Fields) et un système de schémas typés TypeScript.
 
 ---
 
-## 🚀 Démarrage rapide
+## Démarrage rapide
 
 ```bash
 # 1. Installer les dépendances
@@ -12,7 +12,7 @@ npm install
 
 # 2. Configurer l'URL WordPress
 cp .env.example .env.local
-# → Éditez .env.local et remplacez l'URL par la vôtre
+# → Éditez .env.local et renseignez votre URL WordPress
 
 # 3. Lancer le serveur de développement
 npm run dev
@@ -20,7 +20,7 @@ npm run dev
 
 ---
 
-## ⚙️ Configuration WordPress requise
+## Configuration WordPress requise
 
 ### Plugins obligatoires
 | Plugin | Rôle |
@@ -39,10 +39,9 @@ npm run dev
 Ajoutez dans `functions.php` de votre thème :
 
 ```php
-// Autoriser les requêtes depuis le front React
 add_action('init', function () {
-    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-    $allowed = ['http://localhost:3000', 'https://votre-front.com'];
+    $origin  = $_SERVER['HTTP_ORIGIN'] ?? '';
+    $allowed = ['http://localhost:5173', 'https://votre-front.com'];
 
     if (in_array($origin, $allowed)) {
         header("Access-Control-Allow-Origin: $origin");
@@ -60,163 +59,197 @@ add_action('init', function () {
 
 ---
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```
 src/
+├── types/
+│   └── wordpress.ts          ← Toutes les interfaces TypeScript (WPPost, WPPage, FetchState…)
+│
+├── config/
+│   ├── acf-schemas.ts        ← Schémas de champs ACF par type de contenu (HeroACF, ArtistACF…)
+│   └── site.ts               ← Nom du site, langue, items de navigation (NAV_ITEMS)
+│
 ├── lib/
-│   └── wordpress.ts       ← Client API (WP REST + ACF)
+│   └── wordpress.ts          ← Client API bas niveau (fetch + cache + helpers REST)
+│
 ├── hooks/
-│   └── useWordPress.ts    ← Hooks React (usePosts, usePage, useACF…)
+│   ├── useRoute.ts           ← Hook de routing hash (#/page → { route, slug })
+│   └── useWordPress.ts       ← Hooks de données (usePosts, usePage, useCPT, useACFOptions…)
+│
 ├── components/
-│   ├── ACFRenderer.tsx    ← Rendu automatique des champs ACF
-│   └── UI.tsx             ← Composants UI (Card, Nav, Pagination…)
-├── App.tsx                ← Router + pages
-├── main.tsx
-└── index.css              ← Design tokens + Tailwind
+│   ├── ui/                   ← Composants génériques réutilisables
+│   │   ├── Skeleton.tsx      ← Placeholder de chargement (Skeleton, PostCardSkeleton)
+│   │   ├── ErrorBanner.tsx   ← Bannière d'erreur
+│   │   ├── WPContent.tsx     ← Rendu sécurisé du HTML WordPress
+│   │   ├── PostCard.tsx      ← Carte d'article générique
+│   │   ├── Pagination.tsx    ← Pagination (prev/next/numéros)
+│   │   └── index.ts          ← Barrel export
+│   │
+│   ├── layout/               ← Structure fixe de la page
+│   │   ├── Nav.tsx           ← Navigation principale (lit NAV_ITEMS depuis config/site.ts)
+│   │   ├── Footer.tsx        ← Pied de page
+│   │   └── index.ts
+│   │
+│   └── acf/                  ← Système de rendu ACF
+│       ├── ACFField.tsx      ← Rendu d'un champ ACF selon son type détecté
+│       ├── ACFRenderer.tsx   ← Rendu de tous les champs d'un objet ACF
+│       ├── helpers.ts        ← acfText, acfImage, acfBool, acfRepeater, acfReader
+│       └── index.ts
+│
+├── pages/                    ← Une page = un fichier
+│   ├── HomePage.tsx          ← Accueil (héro via ACF Options + HeroACF)
+│   ├── ProgrammationPage.tsx ← Grille d'artistes filtrée par jour/lieu
+│   ├── TwoColumnPage.tsx     ← Layout 2 colonnes générique (informations, histoire…)
+│   ├── BilletteriePage.tsx   ← Iframe billetterie + tarifs
+│   ├── WPPageView.tsx        ← Affichage d'une page WP quelconque par slug
+│   └── ArtistModal.tsx       ← Modal artiste (chargé en lazy via React.lazy)
+│
+├── App.tsx                   ← Shell : layout + router uniquement (~35 lignes)
+├── main.tsx                  ← Point d'entrée Vite
+└── index.css                 ← Design tokens CSS + couches Tailwind
 ```
 
 ---
 
-## 🔌 API disponible (`src/lib/wordpress.ts`)
+## Schémas ACF typés (`src/config/acf-schemas.ts`)
 
-### Posts
+Le cœur du système : chaque type de contenu a un schéma qui mappe des **clés TypeScript** vers les **vrais noms de champs ACF** WordPress.
+
 ```ts
-import { getPosts, getPostBySlug, getPostById } from "./lib/wordpress";
+// Définir un schéma (une seule fois)
+export const HeroACF = {
+  title:    "hero_title",
+  subtitle: "hero_subtitle",
+  videoUrl: "hero_video_url",
+  logo:     "hero_logo",
+} as const;
 
-// Liste des articles
-const { posts, total, totalPages } = await getPosts({ perPage: 10, page: 1 });
+// L'utiliser dans un composant — autocomplétion TypeScript complète
+import { acfReader } from "../components/acf";
+import { HeroACF }   from "../config/acf-schemas";
 
-// Article par slug
-const post = await getPostBySlug("mon-article");
-
-// post.acf contient tous les champs ACF
-console.log(post.acf.sous_titre);
-console.log(post.acf.image_hero);
+const hero     = acfReader(options, HeroACF);
+const title    = hero.text("title");            // → string
+const logo     = hero.image("logo");            // → { url, alt } | null
+const videoUrl = hero.text("videoUrl");
+const first    = hero.first("title", "subtitle"); // → premier champ non vide
 ```
 
-### Pages
-```ts
-import { getPageBySlug } from "./lib/wordpress";
+**Avantages :** renommer un champ ACF côté WordPress = modifier une seule ligne dans `acf-schemas.ts`. Zéro string magique dans les composants.
 
-const page = await getPageBySlug("about");
-// page.acf contient les champs ACF de la page
-```
+### Méthodes de `acfReader`
 
-### ACF Options (champs globaux)
-```ts
-import { getACFOptions } from "./lib/wordpress";
-
-const options = await getACFOptions();
-// options.site_headline, options.logo, etc.
-```
-
-### Custom Post Types
-```ts
-import { getCPT } from "./lib/wordpress";
-
-const projets = await getCPT("projets", { perPage: 12 });
-```
+| Méthode | Retour | Usage |
+|---|---|---|
+| `.text(key)` | `string` | Texte, textarea, wysiwyg |
+| `.image(key)` | `{ url, alt } \| null` | Champ image ACF |
+| `.bool(key)` | `boolean` | Vrai/Faux |
+| `.repeater<T>(key)` | `T[]` | Repeater ACF |
+| `.raw(key)` | `unknown` | Valeur brute |
+| `.first(...keys)` | `string` | Premier champ non vide parmi plusieurs |
 
 ---
 
-## 🎣 Hooks React (`src/hooks/useWordPress.ts`)
+## Hooks de données (`src/hooks/useWordPress.ts`)
 
 ```tsx
-import { usePosts, usePost, usePage, useACFOptions, useCPT } from "./hooks/useWordPress";
+import { usePosts, usePage, useACFOptions, useCPT, useTaxonomyTerms } from "../hooks/useWordPress";
 
-// Dans un composant
-function Blog() {
-  const { posts, status, error, page, setPage, totalPages } = usePosts({
-    perPage: 9,
-    categories: [12], // filtrer par catégorie
-  });
+// Articles WordPress
+const { status, data: posts, error } = usePosts({ perPage: 9, categories: [12] });
 
-  if (status === "loading") return <Spinner />;
-  if (status === "error")   return <p>{error}</p>;
+// Page par slug
+const { status, data: page } = usePage("about");
 
-  return (
-    <>
-      {posts.map(post => (
-        <div key={post.id}>
-          <h2>{post.title}</h2>
-          {/* Champ ACF direct */}
-          <p>{post.acf.mon_champ_texte as string}</p>
-        </div>
-      ))}
-    </>
-  );
-}
+// ACF Options Page (champs globaux)
+const { data: options } = useACFOptions();
+
+// Custom Post Type
+const { data: artists } = useCPT("artiste", { perPage: 100, order: "asc" });
+
+// Termes d'une taxonomie
+const { data: terms } = useTaxonomyTerms("jour");
+```
+
+Chaque hook retourne `{ status, data, error, isFetching }` — cache en mémoire intégré, pas de dépendance externe.
+
+---
+
+## Routing hash (`src/hooks/useRoute.ts`)
+
+Le routing repose sur le hash URL (`#/`), compatible déploiement statique (Netlify, Vercel, etc.) sans configuration serveur.
+
+```ts
+import { useRoute } from "../hooks/useRoute";
+
+const { route, path, slug } = useRoute();
+// route = "#/page/mon-slug"
+// path  = "/page/mon-slug"
+// slug  = "mon-slug"
+```
+
+### Routes disponibles
+
+| Route | Page |
+|---|---|
+| `#/` | Accueil |
+| `#/programmation` | Grille artistes avec filtres |
+| `#/informations` | Informations pratiques (2 colonnes) |
+| `#/histoire` | Histoire du festival (2 colonnes) |
+| `#/billetterie` | Billetterie |
+| `#/page/:slug` | N'importe quelle page WP par son slug |
+
+---
+
+## Configuration du site (`src/config/site.ts`)
+
+Nom, langue et items de navigation centralisés ici. La `Nav` les lit directement, pas de props à passer.
+
+```ts
+export const SITE_CONFIG = {
+  name: "Mon Festival",
+  lang: "fr",
+} as const;
+
+export const NAV_ITEMS = [
+  { id: 1, title: "Accueil",        url: "#/" },
+  { id: 2, title: "Programmation",  url: "#/programmation" },
+  { id: 3, title: "Informations",   url: "#/informations" },
+  { id: 4, title: "Histoire",       url: "#/histoire" },
+  { id: 5, title: "Billetterie",    url: "#/billetterie" },
+] as const;
 ```
 
 ---
 
-## 🧩 ACFRenderer (`src/components/ACFRenderer.tsx`)
-
-Affiche automatiquement n'importe quel champ ACF selon son type détecté.
-
-```tsx
-import { ACFRenderer, acfText, acfImage, acfBool, acfRepeater } from "./components/ACFRenderer";
-
-// Rendu automatique de tous les champs
-<ACFRenderer fields={post.acf} showLabels />
-
-// Accès typisé à un champ spécifique
-const titre    = acfText(post.acf, "sous_titre");     // → string
-const image    = acfImage(post.acf, "image_hero");    // → { url, alt } | null
-const actif    = acfBool(post.acf, "en_vedette");     // → boolean
-const items    = acfRepeater(post.acf, "liste_items"); // → array
-```
-
-**Types ACF supportés automatiquement :**
-- Texte, textarea, wysiwyg (HTML), URL
-- Image (objet ACF avec url/alt)
-- Vrai/Faux (badge coloré)
-- Relation / Post Object
-- Repeater (récursif)
-- Groupe (récursif)
-- Tableau de chaînes (checkboxes, select multiple)
-
----
-
-## 🎨 Personnalisation du thème
-
-Modifiez les variables CSS dans `src/index.css` :
+## Thème et design tokens (`src/index.css`)
 
 ```css
 :root {
-  --bg: #0e0e0e;           /* Fond principal */
-  --accent: #c8945a;       /* Couleur d'accentuation */
+  --bg:           #0e0e0e;   /* Fond principal */
+  --accent:       #c8945a;   /* Couleur d'accentuation */
   --font-display: "Playfair Display", serif;
-  --font-body: "DM Sans", sans-serif;
+  --font-body:    "DM Sans", sans-serif;
 }
 ```
 
 ---
 
-## 📦 Build pour la production
+## Build production
 
 ```bash
 npm run build
-# → dist/ prêt à être déployé (Vercel, Netlify, serveur statique…)
+# → dist/ prêt à déployer (Netlify, Vercel, serveur statique…)
 ```
 
----
-
-## 🗺️ Routes disponibles
-
-| Route | Contenu |
-|---|---|
-| `#/` | Page d'accueil (ACF Options pour le héro) |
-| `#/blog` | Liste des articles avec pagination |
-| `#/post/:slug` | Article unique + champs ACF |
-| `#/page/:slug` | Page WordPress + champs ACF |
+ArtistModal est automatiquement code-splitté en chunk séparé grâce à `React.lazy`.
 
 ---
 
-## 💡 Conseils ACF
+## Ajouter un nouveau type de contenu
 
-1. **Activer l'API ACF** : dans ACF → outils → activer "REST API"
-2. **Options globales** : créez une page d'options avec `acf_add_options_page()`
-3. **Nommage des champs** : utilisez des slugs cohérents (`image_hero`, `sous_titre`…)
-4. **Types complexes** : les repeaters et groupes sont récursifs dans `ACFRenderer`
+1. **Créer le schéma** dans `src/config/acf-schemas.ts`
+2. **Créer la page** dans `src/pages/`
+3. **Ajouter la route** dans `src/App.tsx` (fonction `PageView`)
+4. **Ajouter le lien** dans `src/config/site.ts` (tableau `NAV_ITEMS`)

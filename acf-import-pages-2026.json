@@ -1,0 +1,884 @@
+[
+  {
+    "key": "group_6c2e8f001a001",
+    "title": "Le Festival — Présentation",
+    "fields": [
+      {
+        "key": "field_6c2e8f001b001",
+        "label": "Contenu de présentation",
+        "name": "presentation_contenu",
+        "aria-label": "",
+        "type": "wysiwyg",
+        "instructions": "Texte principal de présentation du festival (histoire, origines...).",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "allow_in_bindings": 0,
+        "tabs": "all",
+        "toolbar": "full",
+        "media_upload": 1,
+        "delay": 0,
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "presentationContenu",
+        "graphql_non_null": 0
+      },
+      {
+        "key": "field_6c2e8f001b002",
+        "label": "Image de présentation",
+        "name": "presentation_image",
+        "aria-label": "",
+        "type": "image",
+        "instructions": "Photo ou illustration principale de la section présentation.",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "return_format": "array",
+        "library": "all",
+        "min_width": "",
+        "min_height": "",
+        "min_size": "",
+        "max_width": "",
+        "max_height": "",
+        "max_size": "",
+        "mime_types": "",
+        "allow_in_bindings": 0,
+        "preview_size": "medium",
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "presentationImage"
+      },
+      {
+        "key": "field_6c2e8f001b003",
+        "label": "Mission & valeurs",
+        "name": "mission_valeurs",
+        "aria-label": "",
+        "type": "wysiwyg",
+        "instructions": "Section mission, valeurs et engagements du festival.",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "allow_in_bindings": 0,
+        "tabs": "all",
+        "toolbar": "full",
+        "media_upload": 1,
+        "delay": 0,
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "missionValeurs",
+        "graphql_non_null": 0
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "options_page",
+          "operator": "==",
+          "value": "le-festival"
+        }
+      ]
+    ],
+    "menu_order": 10,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Champs pour la page d'options 'Le Festival'. Enregistrer cette options-page dans functions.php avec menu_slug='le-festival'.",
+    "show_in_rest": 1,
+    "display_title": "",
+    "show_in_graphql": 1,
+    "graphql_field_name": "leFestivalPresentation",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": ""
+  },
+  {
+    "key": "group_6c2e8f001a002",
+    "title": "Le Festival — Équipe",
+    "fields": [
+      {
+        "key": "field_6c2e8f002b001",
+        "label": "Membres de l'équipe",
+        "name": "equipe",
+        "aria-label": "",
+        "type": "repeater",
+        "instructions": "Ajouter les membres de l'équipe organisatrice.",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "layout": "block",
+        "pagination": 0,
+        "min": 0,
+        "max": 0,
+        "collapsed": "",
+        "button_label": "Ajouter un membre",
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "equipe",
+        "graphql_non_null": 0,
+        "rows_per_page": 20,
+        "sub_fields": [
+          {
+            "key": "field_6c2e8f002b002",
+            "label": "Nom",
+            "name": "nom",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "50",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "nom",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f002b001"
+          },
+          {
+            "key": "field_6c2e8f002b003",
+            "label": "Rôle / Fonction",
+            "name": "role",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "50",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "Ex : Directrice artistique",
+            "prepend": "",
+            "append": "",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "role",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f002b001"
+          },
+          {
+            "key": "field_6c2e8f002b004",
+            "label": "Photo",
+            "name": "photo",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "",
+              "class": "",
+              "id": ""
+            },
+            "return_format": "array",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "allow_in_bindings": 0,
+            "preview_size": "thumbnail",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "photo",
+            "parent_repeater": "field_6c2e8f002b001"
+          }
+        ]
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "options_page",
+          "operator": "==",
+          "value": "le-festival"
+        }
+      ]
+    ],
+    "menu_order": 20,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Champs pour la page d'options 'Le Festival'. Enregistrer cette options-page dans functions.php avec menu_slug='le-festival'.",
+    "show_in_rest": 1,
+    "display_title": "",
+    "show_in_graphql": 1,
+    "graphql_field_name": "leFestivalEquipe",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": ""
+  },
+  {
+    "key": "group_6c2e8f001a003",
+    "title": "Le Festival — Archives",
+    "fields": [
+      {
+        "key": "field_6c2e8f003b001",
+        "label": "Éditions passées",
+        "name": "archives",
+        "aria-label": "",
+        "type": "repeater",
+        "instructions": "Une ligne par édition du festival.",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "layout": "table",
+        "pagination": 0,
+        "min": 0,
+        "max": 0,
+        "collapsed": "",
+        "button_label": "Ajouter une édition",
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "archives",
+        "graphql_non_null": 0,
+        "rows_per_page": 20,
+        "sub_fields": [
+          {
+            "key": "field_6c2e8f003b002",
+            "label": "Année",
+            "name": "annee",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "25",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "maxlength": 4,
+            "allow_in_bindings": 0,
+            "placeholder": "2024",
+            "prepend": "",
+            "append": "",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "annee",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f003b001"
+          },
+          {
+            "key": "field_6c2e8f003b003",
+            "label": "Affiche / Image",
+            "name": "image",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "75",
+              "class": "",
+              "id": ""
+            },
+            "return_format": "array",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "allow_in_bindings": 0,
+            "preview_size": "thumbnail",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "image",
+            "parent_repeater": "field_6c2e8f003b001"
+          }
+        ]
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "options_page",
+          "operator": "==",
+          "value": "le-festival"
+        }
+      ]
+    ],
+    "menu_order": 30,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Champs pour la page d'options 'Le Festival'. Enregistrer cette options-page dans functions.php avec menu_slug='le-festival'.",
+    "show_in_rest": 1,
+    "display_title": "",
+    "show_in_graphql": 1,
+    "graphql_field_name": "leFestivalArchives",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": ""
+  },
+  {
+    "key": "group_6c2e8f001a004",
+    "title": "Le Festival — Contact",
+    "fields": [
+      {
+        "key": "field_6c2e8f004b001",
+        "label": "Blocs de contact",
+        "name": "contact_blocs",
+        "aria-label": "",
+        "type": "repeater",
+        "instructions": "Ex : Presse, Bénévoles, Direction… Chaque bloc sera affiché dans une colonne.",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "layout": "block",
+        "pagination": 0,
+        "min": 0,
+        "max": 0,
+        "collapsed": "",
+        "button_label": "Ajouter un contact",
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "contactBlocs",
+        "graphql_non_null": 0,
+        "rows_per_page": 20,
+        "sub_fields": [
+          {
+            "key": "field_6c2e8f004b002",
+            "label": "Titre du bloc",
+            "name": "titre",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "Ex : Presse",
+            "prepend": "",
+            "append": "",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "titre",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f004b001"
+          },
+          {
+            "key": "field_6c2e8f004b003",
+            "label": "Email",
+            "name": "email",
+            "aria-label": "",
+            "type": "email",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "50",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "allow_in_bindings": 0,
+            "placeholder": "contact@francomanias.ch",
+            "prepend": "",
+            "append": "",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "email",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f004b001"
+          },
+          {
+            "key": "field_6c2e8f004b004",
+            "label": "Téléphone",
+            "name": "tel",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "50",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "+41 26 000 00 00",
+            "prepend": "",
+            "append": "",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "tel",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f004b001"
+          },
+          {
+            "key": "field_6c2e8f004b005",
+            "label": "Adresse",
+            "name": "adresse",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "allow_in_bindings": 0,
+            "placeholder": "Rue de la Fête 1\n1630 Bulle",
+            "maxlength": "",
+            "rows": 3,
+            "new_lines": "br",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "adresse",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f004b001"
+          }
+        ]
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "options_page",
+          "operator": "==",
+          "value": "le-festival"
+        }
+      ]
+    ],
+    "menu_order": 40,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Champs pour la page d'options 'Le Festival'. Enregistrer cette options-page dans functions.php avec menu_slug='le-festival'.",
+    "show_in_rest": 1,
+    "display_title": "",
+    "show_in_graphql": 1,
+    "graphql_field_name": "leFestivalContact",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": ""
+  },
+  {
+    "key": "group_6c2e8f001a005",
+    "title": "Le Festival — Presse & Médias",
+    "fields": [
+      {
+        "key": "field_6c2e8f005b001",
+        "label": "Liens presse",
+        "name": "presse_liens",
+        "aria-label": "",
+        "type": "repeater",
+        "instructions": "Dossiers de presse, communiqués, accréditations…",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "layout": "table",
+        "pagination": 0,
+        "min": 0,
+        "max": 0,
+        "collapsed": "",
+        "button_label": "Ajouter un lien",
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "presseLiens",
+        "graphql_non_null": 0,
+        "rows_per_page": 20,
+        "sub_fields": [
+          {
+            "key": "field_6c2e8f005b002",
+            "label": "Libellé",
+            "name": "label",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "50",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "Dossier de presse 2026",
+            "prepend": "",
+            "append": "",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "label",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f005b001"
+          },
+          {
+            "key": "field_6c2e8f005b003",
+            "label": "URL",
+            "name": "url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "50",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "allow_in_bindings": 0,
+            "placeholder": "https://",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "url",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f005b001"
+          }
+        ]
+      },
+      {
+        "key": "field_6c2e8f005b004",
+        "label": "Liens photographes",
+        "name": "photographes_liens",
+        "aria-label": "",
+        "type": "repeater",
+        "instructions": "Galeries photos, portfolios des photographes du festival.",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "layout": "table",
+        "pagination": 0,
+        "min": 0,
+        "max": 0,
+        "collapsed": "",
+        "button_label": "Ajouter un lien",
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "photographesLiens",
+        "graphql_non_null": 0,
+        "rows_per_page": 20,
+        "sub_fields": [
+          {
+            "key": "field_6c2e8f005b005",
+            "label": "Libellé",
+            "name": "label",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "50",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "Photos officielles",
+            "prepend": "",
+            "append": "",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "label",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f005b004"
+          },
+          {
+            "key": "field_6c2e8f005b006",
+            "label": "URL",
+            "name": "url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "50",
+              "class": "",
+              "id": ""
+            },
+            "default_value": "",
+            "allow_in_bindings": 0,
+            "placeholder": "https://",
+            "show_in_graphql": 1,
+            "graphql_description": "",
+            "graphql_field_name": "url",
+            "graphql_non_null": 0,
+            "parent_repeater": "field_6c2e8f005b004"
+          }
+        ]
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "options_page",
+          "operator": "==",
+          "value": "le-festival"
+        }
+      ]
+    ],
+    "menu_order": 50,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Champs pour la page d'options 'Le Festival'. Enregistrer cette options-page dans functions.php avec menu_slug='le-festival'.",
+    "show_in_rest": 1,
+    "display_title": "",
+    "show_in_graphql": 1,
+    "graphql_field_name": "leFestivalPresse",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": ""
+  },
+  {
+    "key": "group_6c2e8f001a006",
+    "title": "Infos Pratiques — Contenu",
+    "fields": [
+      {
+        "key": "field_6c2e8f006b001",
+        "label": "Transports & Accès",
+        "name": "transports_contenu",
+        "aria-label": "",
+        "type": "wysiwyg",
+        "instructions": "Itinéraires, transports publics, parking, accès PMR…",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "allow_in_bindings": 0,
+        "tabs": "all",
+        "toolbar": "full",
+        "media_upload": 1,
+        "delay": 0,
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "transportsContenu",
+        "graphql_non_null": 0
+      },
+      {
+        "key": "field_6c2e8f006b002",
+        "label": "Horaires",
+        "name": "horaires_contenu",
+        "aria-label": "",
+        "type": "wysiwyg",
+        "instructions": "Horaires d'ouverture des portes, horaires de la billetterie…",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "allow_in_bindings": 0,
+        "tabs": "all",
+        "toolbar": "full",
+        "media_upload": 1,
+        "delay": 0,
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "horairesContenu",
+        "graphql_non_null": 0
+      },
+      {
+        "key": "field_6c2e8f006b003",
+        "label": "Scènes & Lieux",
+        "name": "scenes_contenu",
+        "aria-label": "",
+        "type": "wysiwyg",
+        "instructions": "Description des scènes, plans du site, capacités…",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "allow_in_bindings": 0,
+        "tabs": "all",
+        "toolbar": "full",
+        "media_upload": 1,
+        "delay": 0,
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "scenesContenu",
+        "graphql_non_null": 0
+      },
+      {
+        "key": "field_6c2e8f006b004",
+        "label": "Restauration & Bars",
+        "name": "restauration_contenu",
+        "aria-label": "",
+        "type": "wysiwyg",
+        "instructions": "Offre food & beverages, règles sur la nourriture extérieure…",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "allow_in_bindings": 0,
+        "tabs": "all",
+        "toolbar": "full",
+        "media_upload": 1,
+        "delay": 0,
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "restaurationContenu",
+        "graphql_non_null": 0
+      },
+      {
+        "key": "field_6c2e8f006b005",
+        "label": "Sécurité",
+        "name": "securite_contenu",
+        "aria-label": "",
+        "type": "wysiwyg",
+        "instructions": "Objets interdits, fouilles, consignes de sécurité…",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "allow_in_bindings": 0,
+        "tabs": "all",
+        "toolbar": "full",
+        "media_upload": 1,
+        "delay": 0,
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "securiteContenu",
+        "graphql_non_null": 0
+      },
+      {
+        "key": "field_6c2e8f006b006",
+        "label": "Hébergement",
+        "name": "hebergement_contenu",
+        "aria-label": "",
+        "type": "wysiwyg",
+        "instructions": "Hôtels partenaires, camping, solutions de logement à proximité…",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "allow_in_bindings": 0,
+        "tabs": "all",
+        "toolbar": "full",
+        "media_upload": 1,
+        "delay": 0,
+        "show_in_graphql": 1,
+        "graphql_description": "",
+        "graphql_field_name": "hebergementContenu",
+        "graphql_non_null": 0
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "options_page",
+          "operator": "==",
+          "value": "informations-pratiques"
+        }
+      ]
+    ],
+    "menu_order": 60,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Champs pour la page d'options 'Infos pratiques'. Enregistrer cette options-page dans functions.php avec menu_slug='informations-pratiques'.",
+    "show_in_rest": 1,
+    "display_title": "",
+    "show_in_graphql": 1,
+    "graphql_field_name": "infosPratiques",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": ""
+  }
+]
