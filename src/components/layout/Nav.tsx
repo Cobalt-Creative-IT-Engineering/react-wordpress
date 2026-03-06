@@ -12,7 +12,7 @@ export function Nav() {
   const [scrolled, setScrolled] = React.useState(false);
   const { route } = useRoute();
   const isHome        = route === "#/" || route === "";
-  const isTransparent = isHome && !scrolled;
+  const isTransparent = isHome && !scrolled && !open;
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -56,7 +56,7 @@ export function Nav() {
                   href={item.url}
                   className="nav-link nav-cta"
                   {...(isExternal ? { target: "_blank", rel: "noreferrer" } : {})}
-                >{item.title}</a>
+                ><span>{item.title}</span></a>
               </li>
             );
           })}
@@ -68,9 +68,9 @@ export function Nav() {
           aria-label="Menu"
           aria-expanded={open}
         >
-          <span className={`ham-line ${open ? "rotate-45 translate-y-1.5" : ""}`} />
+          <span className={`ham-line ${open ? "rotate-45 translate-y-2" : ""}`} />
           <span className={`ham-line ${open ? "opacity-0" : ""}`} />
-          <span className={`ham-line ${open ? "-rotate-45 -translate-y-1.5" : ""}`} />
+          <span className={`ham-line ${open ? "-rotate-45 -translate-y-2" : ""}`} />
         </button>
 
       </nav>

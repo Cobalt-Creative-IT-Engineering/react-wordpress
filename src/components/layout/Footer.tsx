@@ -11,9 +11,9 @@ export function Footer() {
         </nav>
 
         <div className="footer-col footer-col--right">
-          <p className="footer-newsletter-label">Partagez-nous à tous !</p>
+          <p className="footer-newsletter-label">Inscrivez-vous à notre</p>
           <a href="https://francomanias.us16.list-manage.com/subscribe?u=58d91f7ee35b36b81ee7e614e&id=a03eda332b" target="_blank" rel="noreferrer" className="btn-primary footer-newsletter-btn">
-            Newsletter
+            <span>Newsletter</span>
           </a>
           <div className="footer-social">
             <a href="https://facebook.com" target="_blank" rel="noreferrer" className="footer-social-link" aria-label="Facebook">
@@ -34,7 +34,7 @@ export function Footer() {
 
       <div className="footer-credits">
         <span>© 2026 Francomanias — Tous droits réservés</span>
-        <a href="#/page/credits" className="footer-link">Crédits</a>
+        <div><span style={{ display: "none" }}>Hébergement: <a href="https://infomaniak.com/" target="_blank" rel="noreferrer">Infomaniak</a> /</span> Développement: <a href="https://cobalt-it.ch/" target="_blank" rel="noreferrer">Cobalt</a> / Design: <a href="https://paradoxe.studio" target="_blank" rel="noreferrer">Paradoxe</a> x <a href="https://www.atelier-murmure.ch" target="_blank" rel="noreferrer">Murmure</a></div>
       </div>
     </footer>
   );

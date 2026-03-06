@@ -280,6 +280,14 @@ a {
     z-index: 1;
   }
 
+  /* Sur mobile : logo en flux normal (gauche), hamburger à droite via ml-auto */
+  @media (max-width: 640px) {
+    .nav-logo-link {
+      position: static;
+      transform: none;
+    }
+  }
+
   .nav-logo-svg {
     background-color: var(--nav-logo-color, currentColor);
     -webkit-mask-repeat: no-repeat;
@@ -290,23 +298,16 @@ a {
     mask-position: center;
   }
 
-  /* Compact (mobile) : carré ~1:1 */
+  /* Compact : masqué partout (logo horizontal utilisé sur tous les écrans) */
   .nav-logo-compact {
-    display: block;
-    height: 36px;
-    aspect-ratio: 1011 / 1103;
+    display: none;
   }
 
-  /* Horizontal (desktop) : ratio ~3.58:1 */
+  /* Horizontal : toujours visible */
   .nav-logo-horizontal {
-    display: none;
+    display: block;
     height: 34px;
     aspect-ratio: 1990 / 556;
-  }
-
-  @media (min-width: 641px) {
-    .nav-logo-compact    { display: none; }
-    .nav-logo-horizontal { display: block; }
   }
 
   .nav-links {
@@ -946,23 +947,27 @@ a {
   }
 
   .btn-primary {
-    @apply inline-block px-6 py-3 font-semibold text-sm;
-    border-radius: 4px;
-    background: var(--accent);
-    color: #fff;
-    text-align: center;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    @apply px-6 pt-3 pb-2 font-semibold text-sm;
+    height: 2.5rem;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--color-2, #fff);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
     font-family: var(--font-heading, sans-serif);
     font-weight: 700;
-    box-shadow: 0 10px 24px rgba(18, 58, 122, 0.28);
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    line-height: 1;
+    box-shadow: none;
+    transition: background-color 0.2s ease, transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform;
   }
 
   .btn-primary:hover {
     background: var(--accent-hover);
-    transform: translateY(-1px);
+    transform: perspective(500px) rotateX(-4deg) rotateY(6deg) scale(1.04);
   }
 
   .btn-ghost {
@@ -1166,20 +1171,29 @@ a {
   /* ── Nav CTA (pilule) ──────────────────────────────────────────────────── */
 
   .nav-cta {
-    background: var(--nav-cta-bg);
-    color: var(--nav-cta-text) !important;
-    border-radius: 4px;
-    padding: 0.3rem 1.1rem;
-    font-family: var(--font-heading, sans-serif);
-    font-weight: 700;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    height: 2.5rem;
+    @apply px-4 pt-3 pb-2;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--color-2, #fff) !important;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    font-family: var(--font-heading, sans-serif);
+    font-weight: 700;
+    font-size: 0.875rem;
+    line-height: 1;
+    box-shadow: none;
+    transition: background-color 0.2s ease, transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform;
   }
 
   .nav-cta:hover {
-    opacity: 0.88;
-    color: var(--nav-cta-text) !important;
+    background: var(--accent-hover);
+    color: var(--color-2, #fff) !important;
+    transform: perspective(500px) rotateX(-4deg) rotateY(6deg) scale(1.04);
   }
 
   /* ── Festival Home — héro pleine largeur ───────────────────────────────── */
@@ -1192,10 +1206,10 @@ a {
     border-radius: 0;
     border: none;
     box-shadow: none;
-    margin-top: -4rem;   /* remonte derrière la nav sticky */
-    padding-top: 4rem;   /* compense pour que le contenu commence sous la nav */
+    margin-top: -4rem;  
+    padding-top: 4rem;
     min-height: 85vh;
-    background: #000; /* fallback si la vidéo ne charge pas */
+    background: var(--color-1);
     justify-content: center;
   }
 
@@ -1382,6 +1396,7 @@ a {
     object-fit: cover;
     background: #eee;
     display: block;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), filter 0.3s ease;
   }
 
   .news-card-img--empty { background: #e8e8e8; }
@@ -1621,8 +1636,8 @@ a {
   }
 
   .footer-newsletter-btn {
+    margin-top: -0.8rem;
     font-size: 0.875rem;
-    padding: 0.5rem 1.5rem;
   }
 
   .footer-social {
@@ -1640,7 +1655,8 @@ a {
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.12);
     color: #ffffff;
-    transition: background 0.2s;
+    transition: background 0.2s, opacity 0.2s, transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform;
   }
 
   .footer-social-link:hover {
@@ -1705,12 +1721,14 @@ a {
   }
 
   html.theme-2026 .footer-social-link {
-    background: color-mix(in srgb, var(--color-1) 15%, transparent);
-    color: var(--color-1);
+    background: var(--color-1);
+    color: var(--color-2);
   }
 
   html.theme-2026 .footer-social-link:hover {
-    background: color-mix(in srgb, var(--color-1) 25%, transparent);
+    background: var(--color-1);
+    opacity: 0.85;
+    transform: perspective(500px) rotateX(-4deg) rotateY(6deg) scale(1.08);
   }
 
   html.theme-2026 .footer-credits {
@@ -1720,10 +1738,10 @@ a {
 
   html.theme-2026 .content-column h2 {
     font-family: var(--font-display);
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    font-weight: 700;
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: var(--ls-heading);
+    letter-spacing: var(--ls-display);
     border-bottom: 2px solid var(--accent);
     padding-bottom: 0.5rem;
     margin: 2.5rem 0 1.25rem;
@@ -1857,9 +1875,17 @@ a {
     color: var(--text-secondary);
   }
 
-  html.theme-2026 .ip-section h2 {
+  html.theme-2026 .ip-section h2,
+  html.theme-2026 .content-column .ip-section h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-display);
     border-bottom-color: var(--accent);
     border-bottom-width: 2px;
+    margin: 2.5rem 0 1.25rem;
+    padding-bottom: 0.5rem;
   }
 
   /* ── Typographie thème 2026 ────────────────────────────────────────────── */
@@ -2188,9 +2214,8 @@ a {
     color: var(--text-secondary);
   }
 
-  /* ── Effets hover : tilt 3D (élément survolé net, voisins floutés) ─────────── */
+  /* ── Effets hover : tilt 3D + blur ────────────────────────────────────────── */
 
-  .news-card--link,
   .ip-archive-card,
   .partner-logo-link {
     transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
@@ -2201,34 +2226,28 @@ a {
     text-decoration: none;
   }
 
-  /* Tilt sur l'élément survolé — reste net */
-  .news-card--link:hover,
+  .news-card--link { text-decoration: none; }
+
+  /* Actualités : tilt + blur sur l'image uniquement, le texte reste net */
+  .news-card--link:hover .news-card-img {
+    transform: perspective(700px) rotateX(-4deg) rotateY(5deg) scale(1.03);
+    filter: blur(2px);
+  }
+
+  /* Archives + logos partenaires : tilt + blur sur l'élément entier */
   .ip-archive-card:hover {
     transform: perspective(700px) rotateX(-4deg) rotateY(5deg) scale(1.03);
+    filter: blur(2px);
     z-index: 2;
     position: relative;
     text-decoration: none;
   }
   .partner-logo-link:hover {
     transform: perspective(500px) rotateX(-3deg) rotateY(6deg) scale(1.08);
+    filter: blur(2px);
     z-index: 2;
     position: relative;
     text-decoration: none;
-  }
-
-  /* Blur des voisins quand l'un est survolé */
-  .news-carousel-track:has(.news-card--link:hover) .news-card--link:not(:hover) {
-    filter: blur(2px);
-    opacity: 0.6;
-  }
-  .ip-archives-grid:has(.ip-archive-card:hover) .ip-archive-card:not(:hover) {
-    filter: blur(2px);
-    opacity: 0.6;
-  }
-  .partners-logos-area:has(.partner-logo-link:hover) .partner-logo-link:not(:hover),
-  .ip-partners-grid-3:has(.partner-logo-link:hover) .partner-logo-link:not(:hover) {
-    filter: blur(2px);
-    opacity: 0.5;
   }
 
   /* Pas de soulignement sur les enfants */

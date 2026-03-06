@@ -35,14 +35,12 @@ export const THEMES: Record<ThemeName, ThemeConfig> = {
   },
   "2025": {
     cssClass: "theme-2025",
-    fontsUrl:
-      "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=optional",
+    fontsUrl: null,
     label: "2025 (bleu, arrondi, stickers)",
   },
   "2026": {
     cssClass: "theme-2026",
-    fontsUrl:
-      "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=optional",
-    label: "2026 (rose, carré, Space Grotesk)",
+    fontsUrl: null, // SwissPosters + HelveticaLTStd bundlées via @font-face dans index.css
+    label: "2026 (rose, carré, SwissPosters + Helvetica)",
   },
 };
