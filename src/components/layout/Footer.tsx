@@ -12,7 +12,7 @@ export function Footer() {
 
         <div className="footer-col footer-col--right">
           <p className="footer-newsletter-label">Partagez-nous à tous !</p>
-          <a href="#/newsletter" className="btn-primary footer-newsletter-btn">
+          <a href="https://francomanias.us16.list-manage.com/subscribe?u=58d91f7ee35b36b81ee7e614e&id=a03eda332b" target="_blank" rel="noreferrer" className="btn-primary footer-newsletter-btn">
             Newsletter
           </a>
           <div className="footer-social">

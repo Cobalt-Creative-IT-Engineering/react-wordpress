@@ -57,11 +57,41 @@ export const InformationsACF = {
   hebergement:  "hebergement_contenu",
 } as const;
 
-// Page WP attendue : slug "le-festival"
+// Options page : menu_slug="le-festival"
 export const HistoireACF = {
-  presentation: "presentation_contenu",
-  image:        "presentation_image",
-  mission:      "mission_valeurs",
+  presentation:      "presentation_contenu",
+  image:             "presentation_image",
+  mission:           "mission_valeurs",
+  equipe:            "equipe",              // repeater → { nom, role, photo }
+  archives:          "archives",            // repeater → { annee, image }
+  contactBlocs:      "contact_blocs",       // repeater → { titre, email, tel, adresse }
+  presseLiens:       "presse_liens",        // repeater → { label, url }
+  photographesLiens: "photographes_liens",  // repeater → { label, url }
+} as const;
+
+// ─── CPT : Partenaire ──────────────────────────────────────────────────────
+
+export const PartenaireACF = {
+  logo: "logo",
+  lien: "lien",
+  categorie: "categorie_du_partenaire",   // taxonomy field → IDs
+} as const;
+
+// ─── CPT : Ancienne édition ────────────────────────────────────────────────
+
+export const AncieneEditionACF = {
+  annee:        "annee",
+  photo:        "photo",
+  description:  "description",
+  programmation: "programmation",    // file → { url, filename }
+  grilleHoraire: "grille_horaire",  // file → { url, filename }
+} as const;
+
+// ─── CPT : Actualité ───────────────────────────────────────────────────────
+
+export const ActualiteACF = {
+  photo:   "photo",     // ⚠ mettre un name dans ACF + show_in_rest: 1
+  contenu: "contenu",   // wysiwyg — ⚠ show_in_rest: 1 requis
 } as const;
 
 // ─── Type utilitaire ──────────────────────────────────────────────────────

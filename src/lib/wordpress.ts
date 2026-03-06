@@ -31,8 +31,9 @@ const RAW_WP_URL = (import.meta.env.VITE_WP_URL ?? "https://votre-wordpress.com"
  */
 export const WP_BASE_URL = import.meta.env.DEV ? "" : RAW_WP_URL;
 
-const API     = `${WP_BASE_URL}/wp-json/wp/v2`;
-const ACF_API = `${WP_BASE_URL}/wp-json/acf/v3`;
+const API          = `${WP_BASE_URL}/wp-json/wp/v2`;
+const ACF_API      = `${WP_BASE_URL}/wp-json/acf/v3`;
+const GRAPHQL_URL  = import.meta.env.DEV ? "/graphql" : `${RAW_WP_URL}/graphql`;
 
 // ─── Helpers internes ─────────────────────────────────────────────────────
 
@@ -48,6 +49,12 @@ function buildParams(params: QueryParams): URLSearchParams {
   if (params.order)              p.set("order",      params.order);
   if (params.status)             p.set("status",     params.status);
   if (params.embed !== false)    p.set("_embed",     "1");
+  if (params.include?.length)    p.set("include",    params.include.join(","));
+  if (params.taxonomies) {
+    for (const [tax, val] of Object.entries(params.taxonomies)) {
+      p.set(tax, Array.isArray(val) ? val.join(",") : String(val));
+    }
+  }
   return p;
 }
 
@@ -105,6 +112,21 @@ async function fetcher<T>(url: string): Promise<T> {
   return res.json();
 }
 
+export async function graphqlFetch<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+  const res = await fetch(GRAPHQL_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, variables }),
+  });
+  if (!res.ok) throw new Error(`GraphQL error ${res.status}`);
+  const json = await res.json() as { data?: T; errors?: Array<{ message: string }> };
+  if (import.meta.env.DEV) {
+    console.debug("[GraphQL] response:", JSON.stringify(json, null, 2));
+  }
+  if (json.errors?.length) throw new Error(json.errors[0].message);
+  return json.data as T;
+}
+
 // ─── Posts ────────────────────────────────────────────────────────────────
 
 export async function getPosts(params: QueryParams = {}): Promise<{
@@ -155,16 +177,32 @@ export async function getCPT<T extends Record<string, unknown>>(
 // ─── ACF ──────────────────────────────────────────────────────────────────
 
 export async function getACFOptions(): Promise<ACFOptions> {
-  return fetcher<ACFOptions>(`${ACF_API}/options/options`);
+  const raw = await fetcher<Record<string, unknown>>(`${ACF_API}/options/options`);
+  return normalizeACFResponse(raw) as ACFOptions;
 }
 
 /**
- * Récupère les champs ACF d'une Options Sub-Page enregistrée via
- * acf_add_options_sub_page(['menu_slug' => $slug, ...]).
+ * Récupère les champs ACF d'une Options Sub-Page enregistrée via ACF.
  * Endpoint : /wp-json/acf/v3/options/{slug}
+ *
+ * Normalise la réponse : ACF v3 retourne parfois { id, acf: { fields } }
+ * et parfois directement { fields }.
  */
 export async function getACFOptionsPage(slug: string): Promise<Record<string, unknown>> {
-  return fetcher<Record<string, unknown>>(`${ACF_API}/options/${slug}`);
+  const raw = await fetcher<Record<string, unknown>>(`${ACF_API}/options/${slug}`);
+  if (import.meta.env.DEV) {
+    console.debug(`[ACF options/${slug}] raw response:`, raw);
+  }
+  return normalizeACFResponse(raw);
+}
+
+/** Extrait les champs depuis { id, acf: { ... } } ou { champs... } */
+function normalizeACFResponse(raw: Record<string, unknown>): Record<string, unknown> {
+  const inner = raw?.acf;
+  if (inner && typeof inner === "object" && !Array.isArray(inner)) {
+    return inner as Record<string, unknown>;
+  }
+  return raw;
 }
 
 export async function getACFForPost(postId: number): Promise<Record<string, unknown>> {

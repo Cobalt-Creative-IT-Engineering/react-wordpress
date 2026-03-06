@@ -1,3 +1,42 @@
+/* ─── Polices locales ────────────────────────────────────────────────────────
+   Swiss Posters : titre condensed semi-bold tall
+   Helvetica LT Std : sous-titres (bold) + corps (roman)
+   Printvetica : disponible si besoin
+──────────────────────────────────────────────────────────────────────────── */
+
+@font-face {
+  font-family: "SwissPosters";
+  src: url("./assets/fonts/Swiss Posters/Swissposters-CondSemBdTall.woff2") format("woff2"),
+       url("./assets/fonts/Swiss Posters/Swissposters-CondSemBdTall.otf")   format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HelveticaLTStd";
+  src: url("./assets/fonts/Helvetica LT Std/HelveticaLTStd-Roman.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HelveticaLTStd";
+  src: url("./assets/fonts/Helvetica LT Std/HelveticaLTStd-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Printvetica";
+  src: url("./assets/fonts/Printvetica/Printvetica.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,14 +136,15 @@ html.theme-2026 {
   --surface-2:      var(--color-2);
   --surface-3:      color-mix(in srgb, var(--color-2) 70%, #ffffff 30%);
   --border:         color-mix(in srgb, var(--color-2) 55%, #000000 45%);
-  --text-primary:   #0d0d0d;
-  --text-secondary: #1a1a1a;
-  --text-muted:     #555555;
+  --text-primary:   var(--color-1);
+  --text-secondary: var(--color-1);
+  --text-muted:     color-mix(in srgb, var(--color-1) 65%, transparent);
   --accent:         var(--color-1);
   --accent-hover:   color-mix(in srgb, var(--color-1) 85%, #ffffff 15%);
   --accent-soft:    var(--color-2);
-  --font-display:   "Space Grotesk", "DM Sans", system-ui, sans-serif;
-  --font-body:      "Space Grotesk", "DM Sans", system-ui, sans-serif;
+  --font-display:   "SwissPosters", system-ui, sans-serif;
+  --font-heading:   "HelveticaLTStd", system-ui, sans-serif;
+  --font-body:      "HelveticaLTStd", system-ui, sans-serif;
   --radius:         0px;
   --radius-lg:      2px;
   /* Héro rose grainé */
@@ -117,9 +157,10 @@ html.theme-2026 {
   /* Sections jaune */
   --section-alt-bg:  var(--color-2);
   --section-alt-text:#0d0d0d;
-  /* Nav — pilules CTA uniquement (pas de fond coloré sur la barre) */
-  --nav-cta-bg:      var(--color-2);
-  --nav-cta-text:    #0d0d0d;
+  /* Nav — état normal (après scroll / autres pages) */
+  --nav-cta-bg:      var(--color-1);
+  --nav-cta-text:    var(--color-2);
+  --nav-logo-color:  var(--color-1);
   /* Désactiver les blobs (fonds pleins) */
   --body-grad-1:         transparent;
   --body-grad-2:         transparent;
@@ -205,18 +246,58 @@ a {
     background: rgba(255, 255, 255, 0.92);
     border-color: var(--border);
     backdrop-filter: blur(10px);
+    transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+  }
+
+  .nav-transparent {
+    background: transparent !important;
+    border-color: transparent !important;
+    backdrop-filter: none !important;
   }
 
   .nav-inner {
     @apply max-w-6xl mx-auto px-6 h-16 flex items-center justify-between;
+    position: relative;
   }
 
-  .nav-logo {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #151210;
-    letter-spacing: -0.02em;
+  /* ── Logo via mask (coloration CSS) ──────────────────────────── */
+  .nav-logo-link {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    z-index: 1;
+  }
+
+  .nav-logo-svg {
+    background-color: var(--nav-logo-color, currentColor);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+
+  /* Compact (mobile) : carré ~1:1 */
+  .nav-logo-compact {
+    display: block;
+    height: 36px;
+    aspect-ratio: 1011 / 1103;
+  }
+
+  /* Horizontal (desktop) : ratio ~3.58:1 */
+  .nav-logo-horizontal {
+    display: none;
+    height: 34px;
+    aspect-ratio: 1990 / 556;
+  }
+
+  @media (min-width: 641px) {
+    .nav-logo-compact    { display: none; }
+    .nav-logo-horizontal { display: block; }
   }
 
   .nav-links {
@@ -241,8 +322,18 @@ a {
   }
 
   .ham-line {
-    @apply block w-5 h-px transition-transform duration-200;
+    @apply block transition-transform duration-200;
+    width: 22px;
+    height: 2px;
     background: var(--text-primary);
+  }
+
+  html.theme-2026 .ham-line {
+    background: var(--color-1);
+  }
+
+  html.theme-2026 .nav-transparent .ham-line {
+    background: var(--color-2);
   }
 
   .mobile-menu {
@@ -733,6 +824,16 @@ a {
     border-bottom-color: var(--accent);
   }
 
+  @media screen and (max-width: 960px) {
+    .two-col {
+      grid-template-columns: 1fr;
+    }
+
+    .side-links {
+      display: none;
+    }
+  }
+
   .content-column {
     @apply min-w-0;
   }
@@ -836,9 +937,16 @@ a {
   }
 
   .btn-primary {
-    @apply inline-block px-6 py-3 rounded-full font-semibold text-sm;
+    @apply inline-block px-6 py-3 font-semibold text-sm;
+    border-radius: 4px;
     background: var(--accent);
     color: #fff;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading, sans-serif);
+    font-weight: 700;
     box-shadow: 0 10px 24px rgba(18, 58, 122, 0.28);
     transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   }
@@ -970,10 +1078,21 @@ a {
     @apply rounded-xl w-full my-6;
   }
 
+  /* blockquote WP → même visuel que .ip-callout */
   .prose-custom blockquote {
-    @apply border-l-4 pl-5 italic my-6;
-    border-color: var(--accent);
-    color: var(--text-muted);
+    margin: 1.5rem 0;
+    padding: 1.25rem 1.5rem;
+    background: var(--surface-2, #f5f5f5);
+    border-left: 3px solid var(--accent);
+    font-style: normal;
+    color: inherit;
+  }
+
+  .prose-custom blockquote p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
   }
 
   .prose-custom code {
@@ -1040,8 +1159,13 @@ a {
   .nav-cta {
     background: var(--nav-cta-bg);
     color: var(--nav-cta-text) !important;
-    border-radius: 999px;
+    border-radius: 4px;
     padding: 0.3rem 1.1rem;
+    font-family: var(--font-heading, sans-serif);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .nav-cta:hover {
@@ -1059,11 +1183,10 @@ a {
     border-radius: 0;
     border: none;
     box-shadow: none;
-    margin: 0;
+    margin-top: -4rem;   /* remonte derrière la nav sticky */
+    padding-top: 4rem;   /* compense pour que le contenu commence sous la nav */
     min-height: 85vh;
-    background:
-      radial-gradient(ellipse 130% 100% at 50% -5%, var(--hero-bg-light), var(--hero-bg) 65%),
-      var(--hero-bg);
+    background: #000; /* fallback si la vidéo ne charge pas */
     justify-content: center;
   }
 
@@ -1110,6 +1233,32 @@ a {
     filter: drop-shadow(0 8px 24px rgba(0,0,0,0.3));
   }
 
+  /* Vidéo de fond héro */
+  .hero-video-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+  }
+
+  /* Logo compact héro (mask-based, coloré via background-color) */
+  .hero-logo-compact {
+    width: min(72vw, 480px);
+    aspect-ratio: 1011 / 1103;
+    background-color: var(--color-2, #ffff8f);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-position: center;
+    mask-position: center;
+    margin: 0 auto 1.5rem;
+    display: block;
+  }
+
   .festival-home .hero-content {
     max-width: none;
     align-items: center;
@@ -1138,6 +1287,11 @@ a {
     padding: 0 1.5rem;
   }
 
+  .home-section--white {
+    background: #ffffff !important;
+    color: var(--text-primary);
+  }
+
   .home-section-title {
     font-family: var(--font-display);
     font-size: clamp(1.3rem, 2.5vw, 1.9rem);
@@ -1147,53 +1301,123 @@ a {
     margin: 0 0 2rem;
   }
 
+  .home-section-title--center {
+    text-align: center;
+  }
+
   /* ── Actualités ────────────────────────────────────────────────────────── */
 
-  .news-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 2rem;
+  /* ── Carousel actualités ──────────────────────────────────────────────── */
+
+  .news-carousel-wrapper {
+    position: relative;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 3rem; /* espace pour les flèches */
   }
 
+  .news-carousel-track {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding-bottom: 1.5rem;
+  }
+
+  .news-carousel-track::-webkit-scrollbar { display: none; }
+
   .news-card {
+    flex: 0 0 calc((100% - 3rem) / 3);
+    min-width: 200px;
+    scroll-snap-align: start;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.4rem;
   }
+
+  @media (max-width: 640px) {
+    .news-card { flex: 0 0 80vw; }
+    .news-carousel-wrapper { padding: 0 2.5rem; }
+  }
+
+  .news-carousel-btn {
+    position: absolute;
+    top: 35%;
+    transform: translateY(-50%);
+    z-index: 2;
+    background: transparent;
+    color: var(--color-1, #000);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  .news-carousel-btn:hover { opacity: 0.8; }
+  .news-carousel-btn--left  { left: 0; }
+  .news-carousel-btn--right { right: 0; }
 
   .news-card-img {
     width: 100%;
-    aspect-ratio: 1;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
-    background: color-mix(in srgb, var(--section-alt-text) 15%, transparent);
+    background: #eee;
     display: block;
   }
 
-  .news-card-img--empty {
-    background: color-mix(in srgb, var(--section-alt-text) 12%, transparent);
+  .news-card-img--empty { background: #e8e8e8; }
+
+  /* Date : style titre (font display, grande) */
+  .news-date {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    margin: 0.5rem 0 0;
+    line-height: 1.1;
   }
 
-  .news-date {
-    font-size: 0.72rem;
+  /* Titre : small, majuscules */
+  .news-card-title {
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: color-mix(in srgb, var(--section-alt-text) 65%, transparent);
+    letter-spacing: 0.1em;
     margin: 0;
+    line-height: 1.4;
   }
 
-  .news-card-title {
-    font-weight: 700;
-    font-size: 0.95rem;
-    margin: 0;
-    line-height: 1.35;
-  }
-
+  /* Extrait : small */
   .news-card-excerpt {
-    font-size: 0.85rem;
-    color: color-mix(in srgb, var(--section-alt-text) 70%, transparent);
+    font-size: 0.7rem;
     margin: 0;
     line-height: 1.5;
+    opacity: 0.75;
+  }
+
+  /* Thème 2026 : titres de section = même format que lineup-link */
+  html.theme-2026 .home-section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    color: var(--color-1);
+  }
+
+  html.theme-2026 .news-date,
+  html.theme-2026 .news-card-title,
+  html.theme-2026 .news-card-excerpt {
+    color: var(--color-1);
   }
 
   .skeleton-line {
@@ -1229,14 +1453,24 @@ a {
 
   /* ── Partenaires ───────────────────────────────────────────────────────── */
 
-  .partners-row {
-    display: flex;
-    align-items: center;
-    gap: 3rem;
-    flex-wrap: wrap;
+  /* Grille 3 colonnes homepage : col1 = titre, col2+3 = logos */
+  .partners-3col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 640px) {
+    .partners-3col {
+      grid-template-columns: 1fr;
+    }
   }
 
   .partners-label {
+    position: sticky;
+    top: 5rem; /* sous la navbar */
+    align-self: start;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.15em;
@@ -1245,18 +1479,90 @@ a {
     margin: 0;
   }
 
-  .partners-grid {
-    display: flex;
+  .partners-logos-area {
+    grid-column: 2 / 4;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     align-items: center;
-    flex-wrap: wrap;
-    gap: 2rem;
-    flex: 1;
+    justify-items: center;
+    gap: 1.5rem 2rem;
+  }
+
+  .partner-logo-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  .partners-logos-area .partner-logo-link {
+    min-height: clamp(2.5rem, 7vw, 5rem);
+    width: 100%;
+    justify-content: center;
   }
 
   .partner-logo {
-    height: 40px;
-    max-width: 140px;
+    height: 80px;
+    max-width: 100%;
+    padding: 0.5rem;
     object-fit: contain;
+    transition: opacity 0.2s;
+  }
+
+  .partner-logo-link:hover .partner-logo { opacity: 0.75; }
+
+  /* Fallback texte quand pas de logo */
+  .partner-logo-name {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: normal;
+    color: var(--color-1);
+  }
+
+  /* Grille partenaires page Le Festival */
+  .ip-partners-category {
+    margin-bottom: 2rem;
+  }
+
+  .ip-partners-cat-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin: 0 0 1rem;
+    opacity: 0.6;
+  }
+
+  .ip-partners-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .ip-partners-grid-3 .partner-logo-link {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60px;
+    text-decoration: none;
+  }
+
+  .ip-partners-grid-3 .partner-logo {
+    max-width: 100%;
+    height: auto;
+    max-height: 60px;
+    object-fit: contain;
+  }
+
+  @media (max-width: 640px) {
+    .ip-partners-grid-3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   /* ── Footer multi-colonnes ─────────────────────────────────────────────── */
@@ -1348,6 +1654,59 @@ a {
   html.theme-2026 .home-section {
     background: var(--section-alt-bg);
     color: var(--section-alt-text);
+  }
+
+  /* Footer : fond color-2, textes color-1 */
+  html.theme-2026 .lineup-link {
+    color: var(--color-1);
+  }
+
+  html.theme-2026 .partners-label {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: normal;
+    color: var(--color-1);
+  }
+
+  html.theme-2026 .ip-partners-cat-title {
+    font-family: var(--font-heading);
+    color: var(--color-1);
+    opacity: 1;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-1) 25%, transparent);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  html.theme-2026 .footer-full {
+    background: var(--color-2);
+    color: var(--color-1);
+  }
+
+  html.theme-2026 .footer-full .footer-link,
+  html.theme-2026 .footer-newsletter-label,
+  html.theme-2026 .footer-credits {
+    color: var(--color-1);
+  }
+
+  html.theme-2026 .footer-full .footer-link:hover {
+    color: color-mix(in srgb, var(--color-1) 70%, #000 30%);
+  }
+
+  html.theme-2026 .footer-social-link {
+    background: color-mix(in srgb, var(--color-1) 15%, transparent);
+    color: var(--color-1);
+  }
+
+  html.theme-2026 .footer-social-link:hover {
+    background: color-mix(in srgb, var(--color-1) 25%, transparent);
+  }
+
+  html.theme-2026 .footer-credits {
+    border-top-color: color-mix(in srgb, var(--color-1) 25%, transparent);
+    opacity: 1;
   }
 
   html.theme-2026 .content-column h2 {
@@ -1494,7 +1853,75 @@ a {
     border-bottom-width: 2px;
   }
 
-  html.theme-2026 .ip-callout {
+  /* ── Typographie thème 2026 ────────────────────────────────────────────── */
+
+  /* Corps : Helvetica regular, interligne 1.4, alignement gauche */
+  html.theme-2026 body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  html.theme-2026 p,
+  html.theme-2026 li,
+  html.theme-2026 td {
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  /* Titres h1 : Swiss Posters condensed semi-bold tall, interlettrage 20% */
+  html.theme-2026 h1 {
+    font-family: var(--font-display);
+    font-weight: 400;      /* le fichier est déjà "semi-bold" par design */
+    letter-spacing: 0.2em;
+    text-transform: none;
+  }
+
+  /* Sous-titres h2, h3 : Helvetica bold, majuscules */
+  html.theme-2026 h2,
+  html.theme-2026 h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Nav thème 2026 ────────────────────────────────────────────────────── */
+  html.theme-2026 .nav-wrapper {
+    background: #ffffff;
+    border-color: transparent;
+    backdrop-filter: none;
+  }
+
+  html.theme-2026 .nav-link {
+    color: var(--color-1);
+  }
+
+  html.theme-2026 .nav-link:hover {
+    color: color-mix(in srgb, var(--color-1) 75%, #000 25%);
+  }
+
+  /* État transparent (accueil avant scroll) */
+  html.theme-2026 .nav-transparent .nav-link {
+    color: var(--color-2);
+  }
+
+  html.theme-2026 .nav-transparent .nav-link:hover {
+    color: var(--color-2);
+    opacity: 0.8;
+  }
+
+  html.theme-2026 .nav-transparent .nav-cta {
+    background: var(--color-2) !important;
+    color: var(--color-1) !important;
+  }
+
+  /* ── Callout / blockquote ───────────────────────────────────────────────── */
+  html.theme-2026 .ip-callout,
+  html.theme-2026 .prose-custom blockquote {
     background: var(--section-alt-bg);
     border-left-color: var(--accent);
   }
@@ -1514,12 +1941,47 @@ a {
   /* Grille équipe */
   .ip-team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1.5rem 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem 2rem;
   }
 
   .ip-team-grid h3 {
     margin-top: 0;
+  }
+
+  .ip-team-member {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border, rgba(0,0,0,0.08));
+  }
+
+  .ip-team-photo {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--surface-2, #f0f0f0);
+  }
+
+  .ip-team-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .ip-team-info strong {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .ip-team-info span {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.3;
   }
 
   /* Grille archives */
@@ -1533,12 +1995,19 @@ a {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
   }
+  .ip-archive-card:hover .ip-archive-year { color: var(--color-primary, currentColor); }
 
   .ip-archive-img {
     aspect-ratio: 3/4;
     background: var(--surface-2, #f0f0f0);
     border: 1px solid var(--border);
+    object-fit: cover;
+    width: 100%;
+    transition: opacity 0.2s;
   }
 
   .ip-archive-year {
@@ -1546,6 +2015,115 @@ a {
     font-weight: 700;
     text-align: center;
     color: var(--text-secondary);
+    transition: color 0.2s;
+  }
+
+  /* ── Page détail ancienne édition ─────────────────────────────────────── */
+
+  .edition-detail {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .edition-back {
+    align-self: flex-start;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+  .edition-back:hover { text-decoration: underline; }
+
+  .edition-year {
+    font-size: clamp(5rem, 18vw, 10rem);
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+    color: var(--color-primary, currentColor);
+    margin: 0;
+  }
+
+  .edition-poster {
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    display: block;
+  }
+
+  .edition-description {
+    width: 100%;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+
+  .edition-links {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .edition-link {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--text-primary, currentColor);
+  }
+  .edition-link:hover { text-decoration: underline; }
+
+  /* Carte actualité cliquable */
+  .news-card--link {
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* Détail actualité */
+  .actu-detail-date {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-secondary);
+  }
+
+  .actu-detail-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .actu-detail-content {
+    text-align: left;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .edition-loading {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    border-top-color: var(--color-primary, #000);
+    animation: spin 0.8s linear infinite;
+    margin: 4rem auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .edition-not-found {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: 3rem;
   }
 
   /* Grille contact */
@@ -1558,6 +2136,28 @@ a {
 
   .ip-contact-grid h3 {
     margin-top: 0;
+  }
+
+  .ip-contact-address {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin-bottom: 0.4rem;
+  }
+
+  .ip-contact-address p,
+  .ip-contact-address br + br {
+    margin: 0;
+    padding: 0;
+  }
+
+  .ip-contact-grid > div {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .ip-contact-grid > div > div {
+    margin-top: 0.2rem;
   }
 
   /* Grille partenaires */
@@ -1577,5 +2177,55 @@ a {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--text-secondary);
+  }
+
+  /* ── Effets hover : tilt 3D (élément survolé net, voisins floutés) ─────────── */
+
+  .news-card--link,
+  .ip-archive-card,
+  .partner-logo-link {
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+                filter 0.3s ease,
+                opacity 0.3s ease;
+    transform-origin: center center;
+    will-change: transform;
+    text-decoration: none;
+  }
+
+  /* Tilt sur l'élément survolé — reste net */
+  .news-card--link:hover,
+  .ip-archive-card:hover {
+    transform: perspective(700px) rotateX(-4deg) rotateY(5deg) scale(1.03);
+    z-index: 2;
+    position: relative;
+    text-decoration: none;
+  }
+  .partner-logo-link:hover {
+    transform: perspective(500px) rotateX(-3deg) rotateY(6deg) scale(1.08);
+    z-index: 2;
+    position: relative;
+    text-decoration: none;
+  }
+
+  /* Blur des voisins quand l'un est survolé */
+  .news-carousel-track:has(.news-card--link:hover) .news-card--link:not(:hover) {
+    filter: blur(2px);
+    opacity: 0.6;
+  }
+  .ip-archives-grid:has(.ip-archive-card:hover) .ip-archive-card:not(:hover) {
+    filter: blur(2px);
+    opacity: 0.6;
+  }
+  .partners-logos-area:has(.partner-logo-link:hover) .partner-logo-link:not(:hover),
+  .ip-partners-grid-3:has(.partner-logo-link:hover) .partner-logo-link:not(:hover) {
+    filter: blur(2px);
+    opacity: 0.5;
+  }
+
+  /* Pas de soulignement sur les enfants */
+  .partner-logo-link *,
+  .news-card--link *,
+  .ip-archive-card * {
+    text-decoration: none;
   }
 }

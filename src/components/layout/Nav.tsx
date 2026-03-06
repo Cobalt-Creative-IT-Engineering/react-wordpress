@@ -1,37 +1,69 @@
 import React from "react";
 import { NAV_ITEMS } from "../../config/site";
+import { useRoute } from "../../hooks/useRoute";
+import logoHorizontal from "../../assets/logo/francomanias-horizontal-2026.svg";
+import logoCompact    from "../../assets/logo/francomanias-compact-2026.svg";
 
 const leftItems  = NAV_ITEMS.filter((i) => !i.cta);
 const rightItems = NAV_ITEMS.filter((i) =>  i.cta);
 
 export function Nav() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen]       = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+  const { route } = useRoute();
+  const isHome        = route === "#/" || route === "";
+  const isTransparent = isHome && !scrolled;
+
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="nav-wrapper">
+    <header className={`nav-wrapper${isTransparent ? " nav-transparent" : ""}`}>
       <nav className="nav-inner">
+
         <ul className="nav-links">
           {leftItems.map((item) => (
             <li key={item.id}>
-              <a href={item.url} className="nav-link">
-                {item.title}
-              </a>
+              <a href={item.url} className="nav-link">{item.title}</a>
             </li>
           ))}
         </ul>
 
+        {!isTransparent && (
+          <a href="#/" className="nav-logo-link" aria-label="Accueil">
+            {/* Horizontal sur desktop, compact sur mobile */}
+            <div
+              className="nav-logo-svg nav-logo-horizontal"
+              style={{ WebkitMaskImage: `url(${logoHorizontal})`, maskImage: `url(${logoHorizontal})` }}
+            />
+            <div
+              className="nav-logo-svg nav-logo-compact"
+              style={{ WebkitMaskImage: `url(${logoCompact})`, maskImage: `url(${logoCompact})` }}
+            />
+          </a>
+        )}
+
         <ul className="nav-links">
-          {rightItems.map((item) => (
-            <li key={item.id}>
-              <a href={item.url} className="nav-link nav-cta">
-                {item.title}
-              </a>
-            </li>
-          ))}
+          {rightItems.map((item) => {
+            const isExternal = item.url.startsWith("http");
+            return (
+              <li key={item.id}>
+                <a
+                  href={item.url}
+                  className="nav-link nav-cta"
+                  {...(isExternal ? { target: "_blank", rel: "noreferrer" } : {})}
+                >{item.title}</a>
+              </li>
+            );
+          })}
         </ul>
 
         <button
-          className="nav-hamburger md:hidden"
+          className="nav-hamburger md:hidden ml-auto"
           onClick={() => setOpen((o) => !o)}
           aria-label="Menu"
           aria-expanded={open}
@@ -40,6 +72,7 @@ export function Nav() {
           <span className={`ham-line ${open ? "opacity-0" : ""}`} />
           <span className={`ham-line ${open ? "-rotate-45 -translate-y-1.5" : ""}`} />
         </button>
+
       </nav>
 
       {open && (

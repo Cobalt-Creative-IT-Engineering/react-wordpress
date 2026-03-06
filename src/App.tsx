@@ -5,7 +5,11 @@ import { ErrorBanner } from "./components/ui";
 import { HomePage }          from "./pages/HomePage";
 import { ProgrammationPage } from "./pages/ProgrammationPage";
 import { InfosPratiquesPage }     from "./pages/InfosPratiquesPage";
+import { InfosPratiques2Page }    from "./pages/InfosPratiques2Page";
 import { LeFestivalPage }         from "./pages/LeFestivalPage";
+import { LeFestival2Page }        from "./pages/LeFestival2Page";
+import { AncieneEditionPage }     from "./pages/AncieneEditionPage";
+import { ActualiteDetailPage }    from "./pages/ActualiteDetailPage";
 import { WPPageView }        from "./pages/WPPageView";
 import { ACTIVE_THEME }      from "./config/site";
 import { THEMES }            from "./themes/index";
@@ -47,6 +51,11 @@ function PageView({ route, slug }: { route: string; slug: string | null }) {
   if (route === "#/programmation")           return <ProgrammationPage />;
   if (route === "#/informations")            return <InfosPratiquesPage />;
   if (route === "#/festival")                return <LeFestivalPage />;
+  if (route === "#/le-festival")             return <LeFestivalPage />;
+  if (route === "#/festival-2")              return <LeFestival2Page />;
+  if (route === "#/informations-2")          return <InfosPratiques2Page />;
+  if (route.startsWith("#/edition/"))        return <AncieneEditionPage slug={route.replace("#/edition/", "")} />;
+  if (route.startsWith("#/actualite/"))      return <ActualiteDetailPage slug={route.replace("#/actualite/", "")} />;
   if (route.startsWith("#/page/") && slug)   return <WPPageView slug={slug} />;
   return <ErrorBanner message="Page non trouvée" />;
 }

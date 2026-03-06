@@ -10,6 +10,7 @@ import {
   getTaxonomyTerms,
   getMediaByIds,
   getACFOptionsPage,
+  graphqlFetch,
 } from "../lib/wordpress";
 import type {
   WPPost,
@@ -19,6 +20,7 @@ import type {
   WPTaxonomyTerm,
   FetchState,
   UsePostsOptions,
+  GQLAllOptions,
 } from "../types/wordpress";
 
 // Re-export des types utiles
@@ -228,5 +230,53 @@ export function useACFOptionsPage(slug: string) {
   return useFetch<Record<string, unknown>>(
     () => (slug ? getACFOptionsPage(slug) : Promise.resolve({})),
     { cacheKey: `acf-options-page:${slug}`, staleMs: 120_000, persist: true }
+  );
+}
+
+// ─── GraphQL ──────────────────────────────────────────────────────────────
+
+const GQL_ALL_OPTIONS = `
+  query GetAllOptions {
+    leFestival {
+      leFestivalPresentation {
+        presentationContenu
+        missionValeurs
+        presentationImage { node { sourceUrl altText } }
+      }
+      leFestivalEquipe {
+        equipe { nom role photo { node { sourceUrl altText } } }
+      }
+      leFestivalArchives {
+        archives { annee image { node { sourceUrl altText } } }
+      }
+      leFestivalContact {
+        contactBlocs { titre email tel adresse }
+      }
+      leFestivalPresse {
+        presseLiens { label url }
+        photographesLiens { label url }
+      }
+    }
+    informationsPratiques {
+      infosPratiques {
+        transportsContenu
+        horairesContenu
+        scenesContenu
+        restaurationContenu
+        securiteContenu
+        hebergementContenu
+      }
+    }
+  }
+`;
+
+/**
+ * Charge les deux options pages WP (Le Festival + Infos Pratiques) en une
+ * seule requête GraphQL. Remplace useACFOptions() pour ces deux pages.
+ */
+export function useGraphQLOptions() {
+  return useFetch<GQLAllOptions>(
+    () => graphqlFetch<GQLAllOptions>(GQL_ALL_OPTIONS),
+    { cacheKey: "gql-options", staleMs: 120_000, persist: true }
   );
 }
