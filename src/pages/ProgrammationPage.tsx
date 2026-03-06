@@ -70,15 +70,23 @@ export function ProgrammationPage() {
         <div className="filter-row">
           {lieuStatus === "loading"
             ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-3 w-24" />)
-            : (lieuTerms ?? []).map((term) => (
+            : <>
+                {(lieuTerms ?? []).map((term) => (
+                  <button
+                    key={term.id}
+                    className={`filter-chip${selectedLieu === term.id ? " active" : ""}`}
+                    onClick={() => setSelectedLieu(selectedLieu === term.id ? null : term.id)}
+                  >
+                    {term.name}
+                  </button>
+                ))}
                 <button
-                  key={term.id}
-                  className={`filter-chip${selectedLieu === term.id ? " active" : ""}`}
-                  onClick={() => setSelectedLieu(selectedLieu === term.id ? null : term.id)}
+                  className={`filter-chip${!selectedLieu ? " active" : ""}`}
+                  onClick={() => setSelectedLieu(null)}
                 >
-                  {term.name}
+                  Tout
                 </button>
-              ))
+              </>
           }
         </div>
         {/* Jours */}

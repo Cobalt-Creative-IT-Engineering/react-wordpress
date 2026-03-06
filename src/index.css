@@ -138,7 +138,7 @@ html.theme-2026 {
   --surface:        #ffffff;
   --surface-2:      var(--color-2);
   --surface-3:      color-mix(in srgb, var(--color-2) 70%, #ffffff 30%);
-  --border:         color-mix(in srgb, var(--color-2) 55%, #000000 45%);
+  --border:         var(--color-1);
   --text-primary:   var(--color-1);
   --text-secondary: var(--color-1);
   --text-muted:     color-mix(in srgb, var(--color-1) 65%, transparent);
@@ -174,8 +174,8 @@ html.theme-2026 {
   --deco-texture-opacity:0;
   /* SwissPosters : pas d'interlettrage supplémentaire */
   --ls-display: 0;
-  --ls-heading: 0.05em;
-  --ls-label:   0.04em;
+  --ls-heading: -0.05em;
+  --ls-label:   0em;
 }
 
 *,
@@ -311,7 +311,7 @@ a {
   }
 
   .nav-links {
-    @apply hidden md:flex items-center gap-8 list-none m-0 p-0;
+    @apply hidden md:flex items-center gap-4 list-none m-0 p-0;
   }
 
   .nav-links--right {
@@ -488,19 +488,21 @@ a {
 
   .program-header {
     display: flex;
-    align-items: baseline;
+    align-items: flex-end;
     justify-content: space-between;
     margin-bottom: 1.5rem;
+    gap: 1rem;
   }
 
   .program-title {
     font-family: var(--font-display);
-    font-size: 0.75rem;
+    font-size: clamp(2.6rem, 6vw, 5.1rem);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.05em;
     color: var(--text-primary);
     margin: 0;
+    line-height: 1;
   }
 
   .program-grille-link {
@@ -528,6 +530,7 @@ a {
     flex-wrap: wrap;
     gap: 1.5rem;
     align-items: center;
+    justify-content: center;
   }
 
   .filter-chip {
@@ -548,8 +551,11 @@ a {
   }
 
   .filter-chip.active {
-    color: var(--text-primary);
-    font-weight: 800;
+    background: var(--accent);
+    color: var(--color-2, #fff);
+    border-radius: 10px;
+    padding: 0.25rem 0.9rem;
+    font-weight: 700;
   }
 
   /* ── Grille artistes ────────────────────────────────────────────────────── */
@@ -616,24 +622,29 @@ a {
   .program-card-name {
     position: absolute;
     top: 0.875rem;
-    left: 0.875rem;
     right: 0.875rem;
+    left: auto;
     font-family: var(--font-display);
-    font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+    font-size: clamp(1.4rem, 3.5vw, 2.2rem);
     font-weight: 800;
     text-transform: uppercase;
     color: #ffffff;
     line-height: 1;
     text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+    text-align: right;
+    max-width: 75%;
   }
 
   .program-card-date {
     position: absolute;
     bottom: 0.875rem;
     left: 0.875rem;
-    font-size: 0.8rem;
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+    font-weight: 800;
     color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+    line-height: 1;
   }
 
   /* ── Modal artiste ──────────────────────────────────────────────────────── */
@@ -824,6 +835,10 @@ a {
     grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
   }
 
+  .two-col div:first-child h2 {
+    margin-top: 0 !important;
+  }
+
   .side-links {
     @apply flex flex-col gap-2;
     position: sticky;
@@ -832,17 +847,18 @@ a {
   }
 
   .side-link {
-    font-size: 0.72rem;
+    font-size: 0.9rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: -0.05em;
     color: var(--text-secondary);
     padding: 0.3rem 0;
     border-bottom: 1px solid transparent;
     transition: color 0.15s, border-color 0.15s;
   }
 
-  .side-link:hover {
+  .side-link:hover,
+  .side-link--active {
     color: var(--accent);
     border-bottom-color: var(--accent);
   }
@@ -1417,7 +1433,7 @@ a {
   /* Date : style titre (font display, grande) */
   .news-date {
     font-family: var(--font-display);
-    font-size: clamp(1rem, 3vw, 4.5rem);
+    font-size: clamp(1rem, 14vw, 3.5rem);
     text-transform: uppercase;
     font-weight: 400;
     letter-spacing: var(--ls-display);
@@ -1501,12 +1517,6 @@ a {
     align-items: start;
   }
 
-  @media (max-width: 640px) {
-    .partners-3col {
-      grid-template-columns: 1fr;
-    }
-  }
-
   .partners-label {
     position: sticky;
     top: 5rem; /* sous la navbar */
@@ -1528,6 +1538,16 @@ a {
     gap: 1.5rem 2rem;
   }
 
+  @media (max-width: 640px) {
+    .partners-3col {
+      grid-template-columns: 1fr;
+    }
+    .partners-logos-area {
+      grid-column: 1;
+      grid-template-columns: 1fr;
+    }
+  }
+
   .partner-logo-link {
     display: inline-flex;
     align-items: center;
@@ -1536,7 +1556,7 @@ a {
   }
 
   .partners-logos-area .partner-logo-link {
-    min-height: clamp(2.5rem, 7vw, 5rem);
+    min-height: clamp(2.5rem, 50vw, 5rem);
     width: 100%;
     justify-content: center;
   }
@@ -1554,7 +1574,8 @@ a {
   /* Fallback texte quand pas de logo */
   .partner-logo-name {
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-size: clamp(2.5rem, 50vw, 5rem);
+    line-height: 1;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: var(--ls-display);
@@ -1772,20 +1793,26 @@ a {
     color: var(--text-primary);
   }
 
-  html.theme-2026 .side-link:hover {
+  html.theme-2026 .side-link:hover,
+  html.theme-2026 .side-link--active {
     color: var(--accent);
   }
 
   /* Programmation 2026 */
   html.theme-2026 .program-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-display);
     color: var(--accent);
   }
 
   html.theme-2026 .filter-chip.active {
-    background: var(--section-alt-bg);
-    border-radius: 20px;
-    padding: 0.2rem 0.75rem;
-    color: var(--text-primary);
+    background: var(--accent);
+    color: var(--color-2, #f5e83d);
+    border-radius: 10px;
+    padding: 0.25rem 0.9rem;
   }
 
   html.theme-2026 .program-card-name {
@@ -1794,6 +1821,15 @@ a {
 
   html.theme-2026 .program-card-date {
     color: var(--section-alt-bg);
+  }
+
+  html.theme-2026 .ip-archive-year {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-heading);
+    text-decoration: none;
+    font-size: 1rem;
   }
 
   /* Modal artiste 2026 */
@@ -1831,11 +1867,12 @@ a {
     margin: 0 0 1.5rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--border);
+    line-height: 0.95;
   }
 
   .ip-section h3 {
     font-family: var(--font-display);
-    font-size: 0.85rem;
+    font-size: 1.2rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: var(--ls-heading);
@@ -1843,7 +1880,7 @@ a {
   }
 
   .ip-section p {
-    font-size: 0.9rem;
+    font-size: 1rem;
     line-height: 1.7;
     color: var(--text-secondary);
     margin: 0 0 0.75rem;
@@ -1859,7 +1896,7 @@ a {
   }
 
   .ip-section ul li {
-    font-size: 0.85rem;
+    font-size: 1rem;
     color: var(--text-secondary);
   }
 
@@ -2063,9 +2100,10 @@ a {
   }
 
   .ip-archive-year {
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: 700;
     text-align: center;
+    text-decoration: none;
     color: var(--text-secondary);
     transition: color 0.2s;
   }

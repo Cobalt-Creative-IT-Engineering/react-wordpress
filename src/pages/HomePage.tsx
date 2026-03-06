@@ -1,5 +1,5 @@
 import React from "react";
-import { useCPT, useMediaBatch } from "../hooks/useWordPress";
+import { useCPT, useMediaBatch, prefetchCPTItems } from "../hooks/useWordPress";
 import type { ActualiteEntry, PartenaireEntry } from "../types/wordpress";
 import logoCompact from "../assets/logo/francomanias-compact-2026.svg";
 import heroGif from "../assets/images/textures/motions/Francomanias_Animation_02.gif";
@@ -78,8 +78,23 @@ export function HomePage() {
 
   React.useEffect(() => { updateArrows(); }, [actualites, updateArrows]);
 
+  // Préchargement des pages détail dès que la liste est disponible
+  React.useEffect(() => {
+    if (!actualites?.length) return;
+    const items = actualites.map((e) => ({
+      slug: e.slug,
+      photoIds: typeof e.acf?.photo === "number" && e.acf.photo > 0 ? [e.acf.photo] : [],
+    }));
+    void prefetchCPTItems("actualite", items);
+  }, [actualites]);
+
   function scrollCarousel(dir: 1 | -1) {
-    trackRef.current?.scrollBy({ left: dir * trackRef.current.clientWidth, behavior: "smooth" });
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.firstElementChild as HTMLElement | null;
+    const gap  = parseFloat(getComputedStyle(el).gap) || 0;
+    const step = card ? card.offsetWidth + gap : el.clientWidth;
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
   }
 
   const isLoading = status === "loading";

@@ -1,8 +1,8 @@
 // ─── Page Infos Pratiques — version ACF/GraphQL ───────────────────────────────
 // Sections vides si pas de contenu dans WP. Voir InfosPratiques2Page pour la
 // version statique de référence.
-import React from "react";
 import { useGraphQLOptions } from "../hooks/useWordPress";
+import { useScrollSpy } from "../hooks/useScrollSpy";
 import { WPContent } from "../components/ui";
 
 const NAV = [
@@ -24,6 +24,7 @@ function scrollToSection(id: string) {
 export function InfosPratiquesPage() {
   const { data } = useGraphQLOptions();
   const ip = data?.informationsPratiques?.infosPratiques;
+  const activeId = useScrollSpy(NAV.map((i) => i.id));
 
   const gqlMap: Record<string, string | undefined> = {
     transports:   ip?.transportsContenu,
@@ -40,7 +41,12 @@ export function InfosPratiquesPage() {
 
         <aside className="side-links">
           {NAV.map((item) => (
-            <a key={item.id} href={`#${item.id}`} onClick={scrollToSection(item.id)} className="side-link">
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              onClick={scrollToSection(item.id)}
+              className={`side-link${activeId === item.id ? " side-link--active" : ""}`}
+            >
               {item.label}
             </a>
           ))}

@@ -3,6 +3,7 @@
 // Partenaires via REST /wp/v2 (CPT). Sections vides si pas de contenu WP.
 import React from "react";
 import { useGraphQLOptions, useCPT, useMediaBatch, useTaxonomyTerms } from "../hooks/useWordPress";
+import { useScrollSpy } from "../hooks/useScrollSpy";
 import { WPContent } from "../components/ui";
 import type { AncieneEditionEntry, PartenaireEntry } from "../types/wordpress";
 
@@ -46,6 +47,7 @@ function arr<T>(val: unknown): T[] | null {
 export function LeFestivalPage() {
   const { data } = useGraphQLOptions();
   const fest = data?.leFestival;
+  const activeId = useScrollSpy(NAV.map((i) => i.id));
 
   const pres             = fest?.leFestivalPresentation;
   const presentationHtml = str(pres?.presentationContenu);
@@ -59,7 +61,7 @@ export function LeFestivalPage() {
 
   const { data: archives }       = useCPT<AncieneEditionEntry>("ancienne-edition", { perPage: 30, orderby: "title", order: "desc" });
   const { data: partenaires }    = useCPT<PartenaireEntry>("partenaire", { perPage: 50 });
-  const { data: partnerCats }    = useTaxonomyTerms("categorie-partenaire");
+  const { data: partnerCats }    = useTaxonomyTerms("categorie");
 
   // Résolution des IDs d'images (REST retourne des entiers pour les champs image/file)
   const archivePhotoIds = (archives ?? [])
@@ -77,7 +79,12 @@ export function LeFestivalPage() {
 
         <aside className="side-links">
           {NAV.map((item) => (
-            <a key={item.id} href={`#${item.id}`} onClick={scrollToSection(item.id)} className="side-link">
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              onClick={scrollToSection(item.id)}
+              className={`side-link${activeId === item.id ? " side-link--active" : ""}`}
+            >
               {item.label}
             </a>
           ))}

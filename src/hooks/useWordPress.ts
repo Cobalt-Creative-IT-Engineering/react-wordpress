@@ -30,7 +30,7 @@ export type { WPPost, WPPage, ACFOptions, QueryParams, WPTaxonomyTerm, FetchStat
 
 const memoryCache = new Map<string, { data: unknown; updatedAt: number }>();
 const DEFAULT_STALE_MS   = 60_000;
-const SESSION_STALE_MS   = 5 * 60_000;  // 5 min pour sessionStorage
+const SESSION_STALE_MS   = 30 * 60_000; // 30 min pour sessionStorage
 const SESSION_PREFIX     = "wp:";
 
 // ─── Sérialisation sessionStorage (gère les Maps) ─────────────────────────
@@ -230,6 +230,41 @@ export function useACFOptionsPage(slug: string) {
   return useFetch<Record<string, unknown>>(
     () => (slug ? getACFOptionsPage(slug) : Promise.resolve({})),
     { cacheKey: `acf-options-page:${slug}`, staleMs: 120_000, persist: true }
+  );
+}
+
+// ─── Prefetch ─────────────────────────────────────────────────────────────
+
+/**
+ * Pré-remplit le cache mémoire pour une liste d'entrées CPT + leurs médias.
+ * À appeler en arrière-plan (fire & forget) quand la liste est chargée.
+ * Les requêtes sont parallèles ; si une entrée est déjà en cache, on la skippe.
+ */
+export async function prefetchCPTItems(
+  cptSlug: string,
+  items: { slug: string; photoIds?: number[] }[]
+): Promise<void> {
+  await Promise.all(
+    items.map(async ({ slug, photoIds = [] }) => {
+      // ── Article ──────────────────────────────────────────────────────────
+      const entryKey = `cpt:${cptSlug}:${JSON.stringify({ slug, perPage: 1 })}`;
+      const entryFetch = memoryCache.has(entryKey)
+        ? Promise.resolve()
+        : getCPT(cptSlug, { slug, perPage: 1 }).then((data) =>
+            memoryCache.set(entryKey, { data, updatedAt: Date.now() })
+          ).catch(() => {});
+
+      // ── Médias ───────────────────────────────────────────────────────────
+      const validIds = photoIds.filter((id) => id > 0);
+      const mediaKey = `media:${[...validIds].sort((a, b) => a - b).join(",")}`;
+      const mediaFetch = !validIds.length || memoryCache.has(mediaKey)
+        ? Promise.resolve()
+        : getMediaByIds(validIds).then((data) =>
+            memoryCache.set(mediaKey, { data, updatedAt: Date.now() })
+          ).catch(() => {});
+
+      await Promise.all([entryFetch, mediaFetch]);
+    })
   );
 }
 
