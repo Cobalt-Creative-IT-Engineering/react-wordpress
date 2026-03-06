@@ -25,7 +25,22 @@ export function Nav() {
     <header className={`nav-wrapper${isTransparent ? " nav-transparent" : ""}`}>
       <nav className="nav-inner">
 
-        <ul className="nav-links">
+        <a
+          href="#/"
+          className={`nav-logo-link${isTransparent ? " nav-logo-hidden" : ""}`}
+          aria-label="Accueil"
+        >
+          <div
+            className="nav-logo-svg nav-logo-horizontal"
+            style={{ WebkitMaskImage: `url(${logoHorizontal})`, maskImage: `url(${logoHorizontal})` }}
+          />
+          <div
+            className="nav-logo-svg nav-logo-compact"
+            style={{ WebkitMaskImage: `url(${logoCompact})`, maskImage: `url(${logoCompact})` }}
+          />
+        </a>
+
+        <ul className="nav-links nav-links--left">
           {leftItems.map((item) => (
             <li key={item.id}>
               <a href={item.url} className="nav-link">{item.title}</a>
@@ -33,21 +48,7 @@ export function Nav() {
           ))}
         </ul>
 
-        {!isTransparent && (
-          <a href="#/" className="nav-logo-link" aria-label="Accueil">
-            {/* Horizontal sur desktop, compact sur mobile */}
-            <div
-              className="nav-logo-svg nav-logo-horizontal"
-              style={{ WebkitMaskImage: `url(${logoHorizontal})`, maskImage: `url(${logoHorizontal})` }}
-            />
-            <div
-              className="nav-logo-svg nav-logo-compact"
-              style={{ WebkitMaskImage: `url(${logoCompact})`, maskImage: `url(${logoCompact})` }}
-            />
-          </a>
-        )}
-
-        <ul className="nav-links">
+        <ul className="nav-links nav-links--right">
           {rightItems.map((item) => {
             const isExternal = item.url.startsWith("http");
             return (

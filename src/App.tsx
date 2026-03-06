@@ -29,12 +29,26 @@ if (_theme.fontsUrl) {
 // ──────────────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const { route, slug } = useRoute();
+  const { route, slug, anchor } = useRoute();
 
-  // Remonte en haut à chaque changement de route
+  // Titre de l'onglet depuis WordPress
   useEffect(() => {
+    fetch("/wp-json/")
+      .then((r) => r.json())
+      .then((d) => { if (d?.name) document.title = d.name; })
+      .catch(() => {});
+  }, []);
+
+  // Scroll : ancre si présente, sinon remonte en haut
+  useEffect(() => {
+    if (anchor) {
+      const t = setTimeout(() => {
+        document.getElementById(anchor)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+      return () => clearTimeout(t);
+    }
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [route]);
+  }, [route, anchor]);
 
   return (
     <div className="app">
