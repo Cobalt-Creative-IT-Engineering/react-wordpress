@@ -33,10 +33,6 @@ function scrollToSection(id: string) {
   };
 }
 
-function toId(val: unknown): number | null {
-  return typeof val === "number" && val > 0 ? val : null;
-}
-
 function cptImgUrl(val: unknown): string | null {
   if (!val) return null;
   if (typeof val === "object" && "url" in (val as object)) return (val as { url: string }).url;
