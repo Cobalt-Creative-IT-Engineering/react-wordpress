@@ -1,54 +1,51 @@
 import { useState, useEffect } from "react";
 
-interface ParsedHash {
-  route: string;
-  anchor: string | null;
-}
-
-function parseHash(rawHash: string): ParsedHash {
-  const fallback = { route: "#/", anchor: null };
-  if (!rawHash || rawHash === "#") return fallback;
-  const withoutLeading = rawHash.startsWith("#") ? rawHash.slice(1) : rawHash;
-  const parts = withoutLeading.split("#");
-  const pathOnly = parts[0].replace(/\/$/, ""); // supprime le trailing slash
-  const anchor = parts[1] || null;
-  if (!pathOnly || pathOnly === "/") return { route: "#/", anchor };
-  return { route: `#${pathOnly}`, anchor };
-}
-
 export interface RouteResult {
-  /** Hash complet normalisé, ex: "#/programmation" */
+  /** Chemin normalisé, ex: "/programmation" ou "/" */
   route: string;
-  /** Chemin sans le "#" de tête, ex: "/programmation" */
+  /** Identique à route (alias pour compatibilité) */
   path: string;
   /**
-   * Slug extrait pour les routes "#/page/:slug".
+   * Slug extrait pour les routes "/page/:slug".
    * null si la route n'est pas de ce format.
    */
   slug: string | null;
-  /** Ancre extraite après le 2e "#", ex: "contact" dans "#/festival/#contact" */
+  /** Fragment URL sans le "#", ex: "contact" depuis "/festival#contact" */
   anchor: string | null;
 }
 
+/** Navigue sans rechargement de page (SPA). */
+export function navigate(path: string) {
+  history.pushState(null, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}
+
+function getState(): RouteResult {
+  // Migration depuis l'ancienne URL hash (#/festival → /festival)
+  if (window.location.hash.startsWith("#/")) {
+    const newPath = window.location.hash.slice(1); // "#/festival" → "/festival"
+    history.replaceState(null, "", newPath);
+  }
+
+  const pathname = window.location.pathname.replace(/\/$/, "") || "/";
+  const hash     = window.location.hash.replace(/^#/, "") || null;
+  const pageMatch = pathname.match(/^\/page\/(.+)$/);
+  const slug = pageMatch ? pageMatch[1] : null;
+  return { route: pathname, path: pathname, slug, anchor: hash };
+}
+
 /**
- * Hook de routing basé sur le hash de l'URL (#/).
- * Aucune dépendance serveur — fonctionne en déploiement statique (Netlify, etc.).
+ * Hook de routing basé sur l'History API (pathname).
+ * Les liens doivent être interceptés via le gestionnaire global dans App.tsx.
  */
 export function useRoute(): RouteResult {
-  const [parsed, setParsed] = useState(() =>
-    parseHash(window.location.hash || "#/")
-  );
+  const [state, setState] = useState(getState);
 
   useEffect(() => {
-    const update = () => setParsed(parseHash(window.location.hash || "#/"));
-    window.addEventListener("hashchange", update);
-    return () => window.removeEventListener("hashchange", update);
+    const update = () => setState(getState());
+    window.addEventListener("popstate", update);
+    return () => window.removeEventListener("popstate", update);
   }, []);
 
-  const { route, anchor } = parsed;
-  const path = route.slice(1); // retire le "#" de tête
-  const pageMatch = route.match(/^#\/page\/(.+)$/);
-  const slug = pageMatch ? pageMatch[1] : null;
-
-  return { route, path, slug, anchor };
+  return state;
 }

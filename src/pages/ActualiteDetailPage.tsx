@@ -31,7 +31,7 @@ export function ActualiteDetailPage({ slug }: { slug: string }) {
     return (
       <main className="edition-detail">
         <p>Actualité introuvable.</p>
-        <p><a href="#/">← Retour</a></p>
+        <p><a href="/">← Retour</a></p>
       </main>
     );
   }
@@ -60,7 +60,7 @@ export function ActualiteDetailPage({ slug }: { slug: string }) {
 
   return (
     <main className="edition-detail actu-detail">
-      <a href="#/" className="edition-back">← Retour</a>
+      <a href="/" className="edition-back">← Retour</a>
 
       {date && <time className="actu-detail-date">{date}</time>}
 

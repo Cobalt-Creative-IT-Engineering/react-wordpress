@@ -138,7 +138,7 @@ export function TwoColumnPage({ slug }: TwoColumnPageProps) {
       <div className="two-col">
         <aside className="side-links">
           {hardLinks.map((link) => (
-            <a key={link.url} href={`#/${slug}${link.url}`} className="side-link">
+            <a key={link.url} href={`/${slug}${link.url}`} className="side-link">
               {link.label}
             </a>
           ))}

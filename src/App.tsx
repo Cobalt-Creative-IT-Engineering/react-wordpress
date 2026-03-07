@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useRoute } from "./hooks/useRoute";
+import { useRoute, navigate } from "./hooks/useRoute";
 import { Nav, Footer } from "./components/layout";
 import { ErrorBanner } from "./components/ui";
 import { HomePage }          from "./pages/HomePage";
@@ -25,22 +25,51 @@ if (_theme.fontsUrl) {
   link.href = _theme.fontsUrl;
   document.head.appendChild(link);
 }
+
+// ─── Intercepteur de liens SPA (History API) ──────────────────────────────────
+// Intercepte tous les clics sur <a href="/..."> locaux pour éviter le rechargement.
+document.addEventListener("click", (e) => {
+  const a = (e.target as Element).closest("a");
+  if (!a) return;
+  const href = a.getAttribute("href");
+  if (!href) return;
+  if (href.startsWith("http") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
+  if (a.getAttribute("target") === "_blank") return;
+  if (a.getAttribute("download") != null) return;
+  // Anciens liens hash "/#/festival" → migrer vers "/festival"
+  if (href.startsWith("/#/")) {
+    e.preventDefault();
+    navigate(href.slice(2)); // "/#/festival" → "/festival"
+    return;
+  }
+  if (href.startsWith("#")) return; // ancres de page (#section) → laisser le navigateur
+  e.preventDefault();
+  navigate(href);
+});
+// ─── Mode grab stickers (Shift enfoncé) ──────────────────────────────────────
+// Shift tenu → les stickers passent au premier plan pour être attrapables.
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Shift") document.documentElement.classList.add("sticker-grab-mode");
+});
+document.addEventListener("keyup", (e) => {
+  if (e.key === "Shift") document.documentElement.classList.remove("sticker-grab-mode");
+});
 // ──────────────────────────────────────────────────────────────────────────────
 
 const PAGE_LABELS: Record<string, string> = {
-  "#/programmation":  "Programmation",
-  "#/informations":   "Infos pratiques",
-  "#/festival":       "Le Festival",
-  "#/le-festival":    "Le Festival",
-  "#/billetterie":    "Billetterie",
+  "/programmation": "Programmation",
+  "/informations":  "Infos pratiques",
+  "/festival":      "Le Festival",
+  "/le-festival":   "Le Festival",
+  "/billetterie":   "Billetterie",
 };
 
 function getPageLabel(route: string): string | undefined {
-  if (route === "#/" || route === "") return undefined;
+  if (route === "/" || route === "") return undefined;
   if (PAGE_LABELS[route]) return PAGE_LABELS[route];
-  if (route.startsWith("#/programmation/")) return "Programmation";
-  if (route.startsWith("#/edition/"))       return "Archives";
-  if (route.startsWith("#/actualite/"))     return "Actualités";
+  if (route.startsWith("/programmation/")) return "Programmation";
+  if (route.startsWith("/edition/"))       return "Archives";
+  if (route.startsWith("/actualite/"))     return "Actualités";
   return undefined;
 }
 
@@ -82,16 +111,16 @@ export default function App() {
 }
 
 function PageView({ route, slug }: { route: string; slug: string | null }) {
-  if (route === "#/" || route === "")        return <HomePage />;
-  if (route === "#/programmation")           return <ProgrammationPage />;
-  if (route.startsWith("#/programmation/"))  return <ProgrammationPage initialSlug={route.replace("#/programmation/", "")} />;
-  if (route === "#/informations")            return <InfosPratiquesPage />;
-  if (route === "#/festival")                return <LeFestivalPage />;
-  if (route === "#/le-festival")             return <LeFestivalPage />;
-  if (route === "#/festival-2")              return <LeFestival2Page />;
-  if (route === "#/informations-2")          return <InfosPratiques2Page />;
-  if (route.startsWith("#/edition/"))        return <AncieneEditionPage slug={route.replace("#/edition/", "")} />;
-  if (route.startsWith("#/actualite/"))      return <ActualiteDetailPage slug={route.replace("#/actualite/", "")} />;
-  if (route.startsWith("#/page/") && slug)   return <WPPageView slug={slug} />;
+  if (route === "/" || route === "")        return <HomePage />;
+  if (route === "/programmation")           return <ProgrammationPage />;
+  if (route.startsWith("/programmation/"))  return <ProgrammationPage initialSlug={route.replace("/programmation/", "")} />;
+  if (route === "/informations")            return <InfosPratiquesPage />;
+  if (route === "/festival")                return <LeFestivalPage />;
+  if (route === "/le-festival")             return <LeFestivalPage />;
+  if (route === "/festival-2")              return <LeFestival2Page />;
+  if (route === "/informations-2")          return <InfosPratiques2Page />;
+  if (route.startsWith("/edition/"))        return <AncieneEditionPage slug={route.replace("/edition/", "")} />;
+  if (route.startsWith("/actualite/"))      return <ActualiteDetailPage slug={route.replace("/actualite/", "")} />;
+  if (route.startsWith("/page/") && slug)   return <WPPageView slug={slug} />;
   return <ErrorBanner message="Page non trouvée" />;
 }

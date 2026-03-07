@@ -11,7 +11,7 @@ export function Nav() {
   const [open, setOpen]       = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
   const { route } = useRoute();
-  const isHome        = route === "#/" || route === "";
+  const isHome        = route === "/" || route === "";
   const isTransparent = isHome && !scrolled && !open;
 
   React.useEffect(() => {
@@ -26,7 +26,7 @@ export function Nav() {
       <nav className="nav-inner">
 
         <a
-          href="#/"
+          href="/"
           className={`nav-logo-link${isTransparent ? " nav-logo-hidden" : ""}`}
           aria-label="Accueil"
         >

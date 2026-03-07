@@ -930,11 +930,6 @@ a {
     animation-iteration-count: infinite;
   }
 
-  /* Pause au hover → l'utilisateur peut attraper le sticker */
-  .sticker-wrap:has(.sticker:hover) {
-    animation-play-state: paused;
-  }
-
   /* 4 trajectoires clairement distinctes */
   @keyframes sticker-float-a {
     0%   { transform: translate(0px,   0px)  rotate(0deg);    }
@@ -964,21 +959,43 @@ a {
 
   .sticker {
     display: block;
-    pointer-events: auto; /* l'image est interactive (hover + drag) */
+    pointer-events: auto; /* draggable si visible (rien au-dessus) */
     cursor: grab;
     user-select: none;
     touch-action: none;
   }
   .sticker:active { cursor: grabbing; }
 
+  /* ── Mode Shift : stickers au premier plan pour les attraper ─────────────── */
+  /* z-index: auto supprime le stacking context des conteneurs → les stickers
+     s'échappent et z-index: 9999 les place au-dessus de tout. */
+  html.sticker-grab-mode .ip-section,
+  html.sticker-grab-mode .edition-detail,
+  html.sticker-grab-mode .home-section,
+  html.sticker-grab-mode .home-section--white,
+  html.sticker-grab-mode .program-grid-container,
+  html.sticker-grab-mode .footer-inner,
+  html.sticker-grab-mode .artist-modal-inner,
+  html.sticker-grab-mode .side-stickers {
+    z-index: auto !important;
+  }
+  html.sticker-grab-mode .sticker-wrap {
+    z-index: 9999 !important;
+    outline: 2px dashed rgba(255,255,255,0.6);
+    outline-offset: 4px;
+  }
+  html.sticker-grab-mode .sticker { cursor: grab; }
+
   @media (max-width: 640px) {
     .sticker-wrap { opacity: 0.2; }
     .sticker { pointer-events: none; }
   }
 
+  /* .side-stickers à z-index: -1 dans le contexte d'empilement de .side-links
+     → les stickers sont rendus AVANT les liens (non-positionnés), donc derrière. */
   .side-stickers {
     position: relative;
-    z-index: 0;
+    z-index: -1;
     height: 120px;
     margin-top: 2rem;
     overflow: visible;
@@ -1019,6 +1036,7 @@ a {
     position: sticky;
     top: 6rem;
     align-self: start;
+    z-index: 0; /* crée un stacking context → .side-stickers z-index:-1 est derrière les liens */
   }
 
   .side-link {
@@ -1807,7 +1825,7 @@ a {
   /* Fallback texte quand pas de logo */
   .partner-logo-name {
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 50vw, 5rem);
+    font-size: clamp(2.5rem, 20vw, 4rem);
     line-height: 1;
     font-weight: 900;
     text-transform: uppercase;

@@ -146,7 +146,7 @@ export function LeFestivalPage() {
                   const photoUrl = photoId ? (mediaMap?.get(photoId)?.url ?? null) : null;
                   const annee    = edition.acf?.annee ?? edition.title?.rendered ?? "";
                   return (
-                    <a key={edition.id} href={`#/edition/${edition.slug}`} className="ip-archive-card">
+                    <a key={edition.id} href={`/edition/${edition.slug}`} className="ip-archive-card">
                       {photoUrl ? (
                         <img src={photoUrl} alt={annee} className="ip-archive-img" />
                       ) : (

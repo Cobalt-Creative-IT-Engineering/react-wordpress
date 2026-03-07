@@ -52,7 +52,7 @@ export function AncieneEditionPage({ slug }: { slug: string }) {
     return (
       <main className="edition-detail">
         <p className="edition-not-found">Édition introuvable.</p>
-        <p><a href="#/festival">← Retour</a></p>
+        <p><a href="/festival">← Retour</a></p>
       </main>
     );
   }
@@ -60,7 +60,7 @@ export function AncieneEditionPage({ slug }: { slug: string }) {
   return (
     <main className="edition-detail">
       <Sticker src={sticker12} size={110} rotate={-12} style={{ top: 16, left: 16 }} />
-      <a href="#/festival" className="edition-back">← Retour</a>
+      <a href="/festival" className="edition-back">← Retour</a>
 
       <h1 className="edition-year">{annee}</h1>
 

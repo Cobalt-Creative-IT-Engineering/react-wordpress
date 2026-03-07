@@ -9,9 +9,9 @@ export function Footer() {
         <nav className="footer-col">
           <a href="#" className="footer-link">Mentions légales</a>
           <a href="#" className="footer-link">Conditions générales</a>
-          <a href="#/festival/#presse" className="footer-link">Accès presse</a>
+          <a href="/festival#presse" className="footer-link">Accès presse</a>
           <a href="#" className="footer-link">Bénévoles</a>
-          <a href="#/festival/#contact" className="footer-link">Contact</a>
+          <a href="/festival#contact" className="footer-link">Contact</a>
         </nav>
 
         <div className="footer-col footer-col--right">

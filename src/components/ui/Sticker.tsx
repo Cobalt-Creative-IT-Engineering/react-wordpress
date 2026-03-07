@@ -61,11 +61,15 @@ export function Sticker({ src, alt = "", size = 120, rotate = 0, style, classNam
     window.addEventListener("touchend", onEnd);
   };
 
+  // On extrait zIndex du style pour que le CSS garde toujours le contrôle
+  // du z-index (-1) → sticker toujours derrière le contenu.
+  const { zIndex: _z, ...restStyle } = style ?? {};
+
   return (
     <span
       className={`sticker-wrap${className ? ` ${className}` : ""}`}
       style={{
-        ...style,
+        ...restStyle,
         animationName: variant,
         animationDuration: duration,
         animationDelay: delay,

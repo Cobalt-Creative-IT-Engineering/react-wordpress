@@ -32,7 +32,7 @@ function ActualiteCard({
     : "";
 
   return (
-    <a href={`#/actualite/${entry.slug}`} className="news-card news-card--link">
+    <a href={`/actualite/${entry.slug}`} className="news-card news-card--link">
       {photoUrl ? (
         <img src={photoUrl} alt={title} className="news-card-img" />
       ) : (
@@ -164,14 +164,14 @@ export function HomePage() {
       {/* ── 3. Line-Up — fond color-2 ─────────────────────────────────── */}
       <section className="lineup-banner home-section">
         <div className="lineup-inner">
-          <a href="#/programmation" className="lineup-link">Line-Up</a>
+          <a href="/programmation" className="lineup-link">Line-Up</a>
           {artistes && artistes.length > 0 && (
             <p className="lineup-names">
               {artistes.map((a, i) => {
                 const nom = (a.acf?.nom as string | undefined) || a.title?.rendered || "";
                 return (
                   <React.Fragment key={a.id}>
-                    <a href={`#/programmation/${a.slug}`} className="lineup-name">{nom}</a>
+                    <a href={`/programmation/${a.slug}`} className="lineup-name">{nom}</a>
                     {i < artistes.length - 1 && <span className="lineup-sep" aria-hidden="true"> · </span>}
                   </React.Fragment>
                 );
