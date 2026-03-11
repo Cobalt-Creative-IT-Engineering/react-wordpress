@@ -21,7 +21,7 @@ interface ArtistModalProps {
   onClose:  () => void;
 }
 
-export default function ArtistModal({ item, jourMap, lieuMap, mediaMap, onClose }: ArtistModalProps) {
+export default function ArtistModal({ item, lieuMap, mediaMap, onClose }: ArtistModalProps) {
   const acf   = acfReader(item.acf ?? {}, ArtistACF, mediaMap);
   const nom   = acf.text("nom") || item.title?.rendered || "Artiste";
   const image = acf.image("photo");
@@ -31,7 +31,6 @@ export default function ArtistModal({ item, jourMap, lieuMap, mediaMap, onClose 
   const dateStr = formatAcfDate(acf.text("date"));
 
   // Taxonomies
-  const jourLabels = (item.jour ?? []).map((id) => jourMap.get(id)).filter(Boolean) as string[];
   const lieuLabels = (item.lieu ?? []).map((id) => lieuMap.get(id)).filter(Boolean) as string[];
   const lieuStr    = lieuLabels.join(", ");
 
