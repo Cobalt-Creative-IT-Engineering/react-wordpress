@@ -102,23 +102,25 @@ export function LeFestivalPage() {
         <section className="content-column">
 
           {/* ── Présentation ────────────────────────────────────────────── */}
-          <div id="presentation" className="ip-section">
-            <h2>Présentation</h2>
-            {presentationImg?.node?.sourceUrl && (
-              <img
-                src={presentationImg.node.sourceUrl}
-                alt={presentationImg.node.altText ?? "Francomanias"}
-                className="ip-presentation-img"
-              />
-            )}
-            {presentationHtml && <WPContent html={presentationHtml} className="prose-custom" />}
-            {missionHtml && <WPContent html={missionHtml} className="prose-custom" />}
-          </div>
+          {(presentationHtml || missionHtml || presentationImg?.node?.sourceUrl) && (
+            <div id="presentation" className="ip-section">
+              <h2>Présentation</h2>
+              {presentationImg?.node?.sourceUrl && (
+                <img
+                  src={presentationImg.node.sourceUrl}
+                  alt={presentationImg.node.altText ?? "Francomanias"}
+                  className="ip-presentation-img"
+                />
+              )}
+              {presentationHtml && <WPContent html={presentationHtml} className="prose-custom" />}
+              {missionHtml && <WPContent html={missionHtml} className="prose-custom" />}
+            </div>
+          )}
 
           {/* ── Équipe ──────────────────────────────────────────────────── */}
-          <div id="equipe" className="ip-section">
-            <h2>L'équipe des Francomanias</h2>
-            {equipeItems && (
+          {equipeItems && (
+            <div id="equipe" className="ip-section">
+              <h2>L'équipe des Francomanias</h2>
               <div className="ip-team-grid">
                 {equipeItems.map((m, i) => {
                   const photoUrl = m.photo?.node?.sourceUrl ?? null;
@@ -135,13 +137,13 @@ export function LeFestivalPage() {
                   );
                 })}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* ── Archives ────────────────────────────────────────────────── */}
-          <div id="archives" className="ip-section">
-            <h2>Archives</h2>
-            {archives && archives.length > 0 && (
+          {archives && archives.length > 0 && (
+            <div id="archives" className="ip-section">
+              <h2>Archives</h2>
               <div className="ip-archives-grid">
                 {archives.map((edition) => {
                   const photoId  = typeof edition.acf?.photo === "number" ? edition.acf.photo : null;
@@ -159,13 +161,13 @@ export function LeFestivalPage() {
                   );
                 })}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* ── Contact ─────────────────────────────────────────────────── */}
-          <div id="contact" className="ip-section">
-            <h2>Contact</h2>
-            {contactBlocs && (
+          {contactBlocs && (
+            <div id="contact" className="ip-section">
+              <h2>Contact</h2>
               <div className="ip-contact-grid">
                 {contactBlocs.map((bloc, i) => (
                   <div key={i}>
@@ -176,14 +178,14 @@ export function LeFestivalPage() {
                   </div>
                 ))}
               </div>
-            )}
-            <Sticker src={sticker08} size={120} rotate={-8} style={{ bottom: 16, right: 16 }} />
-          </div>
+              <Sticker src={sticker08} size={120} rotate={-8} style={{ bottom: 16, right: 16 }} />
+            </div>
+          )}
 
           {/* ── Presse ──────────────────────────────────────────────────── */}
-          <div id="presse" className="ip-section">
-            <h2>Presse</h2>
-            {presseLiens && (
+          {presseLiens && (
+            <div id="presse" className="ip-section">
+              <h2>Presse</h2>
               <ul>
                 {presseLiens.map((lien, i) => (
                   <li key={i}>
@@ -193,13 +195,13 @@ export function LeFestivalPage() {
                   </li>
                 ))}
               </ul>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* ── Photographes ────────────────────────────────────────────── */}
-          <div id="photographes" className="ip-section">
-            <h2>Photographes</h2>
-            {photographesLiens && (
+          {photographesLiens && (
+            <div id="photographes" className="ip-section">
+              <h2>Photographes</h2>
               <ul>
                 {photographesLiens.map((lien, i) => (
                   <li key={i}>
@@ -209,8 +211,8 @@ export function LeFestivalPage() {
                   </li>
                 ))}
               </ul>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* ── Partenaires ─────────────────────────────────────────────── */}
           <div id="partenaires" className="ip-section">

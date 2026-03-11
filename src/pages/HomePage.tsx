@@ -6,6 +6,7 @@ import logoCompact from "../assets/logo/francomanias-compact-2026.svg";
 import heroGif from "../assets/images/textures/motions/Francomanias_Animation_02.gif";
 import heroPoster from "../assets/images/textures/statics/Franco_Gradient_05.jpg";
 import sticker09 from "../assets/images/stickers/Franco2026_Sticker_09.png";
+import sticker10 from "../assets/images/stickers/Franco2026_Sticker_10.png";
 
 // ─── Carte actualité ───────────────────────────────────────────────────────
 
@@ -110,6 +111,8 @@ export function HomePage() {
       <section className="festival-hero">
         <img className="hero-video-bg" src={heroGif} alt="" aria-hidden="true" style={{ backgroundImage: `url(${heroPoster})`, backgroundSize: "cover", backgroundPosition: "center" }} />
         <div className="hero-overlay" />
+        <Sticker src={sticker09} size={160} rotate={-15} className="sticker-fg" style={{ position: "absolute", top: "12%", left: "4%" }} />
+        <Sticker src={sticker10} size={140} rotate={18} className="sticker-fg" style={{ position: "absolute", bottom: "14%", right: "5%" }} />
         <div className="hero-content">
           <div
             className="hero-logo-compact"

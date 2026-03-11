@@ -63,10 +63,11 @@ export function InfosPratiquesPage() {
         <section className="content-column">
           {NAV.map((item) => {
             const html = gqlMap[item.id] || null;
+            if (!html) return null;
             return (
               <div key={item.id} id={item.id} className="ip-section">
                 <h2>{item.label}</h2>
-                {html && <WPContent html={html} className="prose-custom" />}
+                <WPContent html={html} className="prose-custom" />
                 {item.id === "scenes"      && <Sticker src={sticker03} size={120} rotate={-7}  style={{ bottom: 16, right: 16 }} />}
                 {item.id === "hebergement" && <Sticker src={sticker07} size={120} rotate={10}  style={{ bottom: 16, right: 16 }} />}
               </div>

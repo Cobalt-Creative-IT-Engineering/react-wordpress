@@ -14,6 +14,7 @@ function formatAcfDate(raw: string | null): string {
 
 interface ArtistModalProps {
   item:     ProgrammationEntry;
+  isOpen?:  boolean;
   jourMap:  Map<number, string>;
   lieuMap:  Map<number, string>;
   mediaMap: Map<number, { url: string; alt: string }>;
@@ -51,7 +52,7 @@ export default function ArtistModal({ item, jourMap, lieuMap, mediaMap, onClose 
         onClick={(e) => e.stopPropagation()}
       >
         <div className="artist-modal-inner">
-          <Sticker src={sticker09} size={90} rotate={-12} style={{ top: 8, right: 8, zIndex: 10 }} />
+          <Sticker src={sticker09} size={90} rotate={-12} style={{ bottom: 8, left: 8, zIndex: 10 }} />
 
           {/* ── Colonne photo ──────────────────────────────────────────── */}
           <div className="artist-modal-photo-col">
@@ -70,12 +71,8 @@ export default function ArtistModal({ item, jourMap, lieuMap, mediaMap, onClose 
                 <h2 className="artist-modal-name">{nom}</h2>
                 {(dateStr || lieuStr) && (
                   <div className="artist-modal-when">
-                    {dateStr && <span>{dateStr}</span>}
-                    {lieuStr && <span>{lieuStr}</span>}
+                    {dateStr && <span>{dateStr}</span>} · {lieuStr && <span>{lieuStr}</span>}
                   </div>
-                )}
-                {jourLabels.length > 0 && (
-                  <p className="artist-modal-style">{jourLabels.join(" · ")}</p>
                 )}
               </div>
               <button className="artist-modal-close" onClick={onClose} aria-label="Fermer">×</button>

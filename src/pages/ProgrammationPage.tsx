@@ -62,6 +62,14 @@ export function ProgrammationPage({ initialSlug }: { initialSlug?: string } = {}
   const { data: mediaData } = useMediaBatch(photoIds);
   const mediaMap: MediaMap = mediaData ?? new Map();
 
+  // Précharge toutes les images artistes dès que les URLs sont connues
+  React.useEffect(() => {
+    for (const { url } of mediaMap.values()) {
+      const img = new window.Image();
+      img.src = url;
+    }
+  }, [mediaMap]);
+
   const visibleItems = items.filter((item) => {
     const matchJour = selectedJour ? (item.jour ?? []).includes(selectedJour) : true;
     const matchLieu = selectedLieu ? (item.lieu ?? []).includes(selectedLieu) : true;
@@ -140,9 +148,16 @@ export function ProgrammationPage({ initialSlug }: { initialSlug?: string } = {}
       {/* Grille */}
       {status === "loading" && items.length === 0 ? (
         <div className="program-grid">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="program-card program-card-photo--empty" style={{ opacity: 0.4 }} />
-          ))}
+          <div className="program-col">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="program-card program-card-photo--empty" style={{ opacity: 0.4 }} />
+            ))}
+          </div>
+          <div className="program-col program-col--right">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="program-card program-card-photo--empty" style={{ opacity: 0.4 }} />
+            ))}
+          </div>
         </div>
       ) : status === "error" ? (
         <ErrorBanner message={error ?? "Erreur de chargement"} />
@@ -150,16 +165,28 @@ export function ProgrammationPage({ initialSlug }: { initialSlug?: string } = {}
         <>
           {noneVisible && <ErrorBanner message="Aucun artiste n'est disponible pour ces filtres." />}
           <div className="program-grid-container">
-            <Sticker src={sticker04} size={110} rotate={8} style={{ top: 0, right: 0 }} />
+            <Sticker src={sticker04} size={110} rotate={8} style={{ top: -40, right: -10 }} />
             <div className="program-grid">
-              {visibleItems.map((item) => (
-                <ArtistCard
-                  key={item.id}
-                  item={item}
-                  mediaMap={mediaMap}
-                  onClick={() => setActiveArtist(item)}
-                />
-              ))}
+              <div className="program-col">
+                {visibleItems.filter((item) => items.indexOf(item) % 2 === 0).map((item) => (
+                  <ArtistCard
+                    key={item.id}
+                    item={item}
+                    mediaMap={mediaMap}
+                    onClick={() => setActiveArtist(item)}
+                  />
+                ))}
+              </div>
+              <div className="program-col program-col--right">
+                {visibleItems.filter((item) => items.indexOf(item) % 2 === 1).map((item) => (
+                  <ArtistCard
+                    key={item.id}
+                    item={item}
+                    mediaMap={mediaMap}
+                    onClick={() => setActiveArtist(item)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </>
@@ -168,7 +195,9 @@ export function ProgrammationPage({ initialSlug }: { initialSlug?: string } = {}
       {activeArtist && (
         <React.Suspense fallback={null}>
           <LazyArtistModal
+            key={activeArtist.id}
             item={activeArtist}
+            isOpen
             jourMap={jourMap}
             lieuMap={lieuMap}
             mediaMap={mediaMap}
