@@ -1122,7 +1122,7 @@ a {
   html.sticker-grab-mode .sticker { cursor: grab; }
 
   @media (max-width: 640px) {
-    .sticker-wrap { opacity: 1; scale: 0.55; }
+    .sticker-wrap { opacity: 1; scale: 0.35; }
     .sticker { pointer-events: none; }
   }
 
