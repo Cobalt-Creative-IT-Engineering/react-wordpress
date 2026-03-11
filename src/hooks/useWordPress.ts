@@ -411,10 +411,7 @@ export function useGraphQLOptions() {
  */
 export function useGraphQLSiteOptions() {
   return useFetch<GQLAllOptions>(
-    () => graphqlFetch<GQLAllOptions>(GQL_SITE_OPTIONS).catch((e) => {
-      console.warn("[GQL_SITE_OPTIONS] query failed:", e);
-      return {} as GQLAllOptions;
-    }),
+    () => graphqlFetch<GQLAllOptions>(GQL_SITE_OPTIONS).catch(() => ({} as GQLAllOptions)),
     { cacheKey: "gql-site-options", staleMs: 120_000, persist: true }
   );
 }
@@ -425,10 +422,7 @@ export function useGraphQLSiteOptions() {
  */
 export function useGraphQLProgrammationOptions() {
   return useFetch<GQLAllOptions>(
-    () => graphqlFetch<GQLAllOptions>(GQL_PROG_OPTIONS).catch((e) => {
-      console.warn("[GQL_PROG_OPTIONS] query failed:", e);
-      return {} as GQLAllOptions;
-    }),
+    () => graphqlFetch<GQLAllOptions>(GQL_PROG_OPTIONS).catch(() => ({} as GQLAllOptions)),
     { cacheKey: "gql-prog-options", staleMs: 120_000, persist: true }
   );
 }
@@ -440,10 +434,7 @@ export function useGraphQLProgrammationOptions() {
  */
 export function useGraphQLLieuxOptions() {
   return useFetch<GQLAllOptions>(
-    () => graphqlFetch<GQLAllOptions>(GQL_LIEUX_OPTIONS).catch((e) => {
-      console.warn("[GQL_LIEUX_OPTIONS] query failed:", e);
-      return {} as GQLAllOptions;
-    }),
+    () => graphqlFetch<GQLAllOptions>(GQL_LIEUX_OPTIONS).catch(() => ({} as GQLAllOptions)),
     { cacheKey: "gql-lieux-options", staleMs: 120_000, persist: true }
   );
 }

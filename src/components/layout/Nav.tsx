@@ -33,6 +33,7 @@ export function Nav() {
           href="/"
           className={`nav-logo-link${isTransparent ? " nav-logo-hidden" : ""}`}
           aria-label="Accueil"
+          onClick={() => setOpen(false)}
         >
           <div
             className="nav-logo-svg nav-logo-horizontal"
@@ -91,7 +92,7 @@ export function Nav() {
                 key={item.id}
                 href={url}
                 className="mobile-link"
-                onClick={() => setOpen(false)}
+                onClick={() => { if (!isExternal) setOpen(false); }}
                 {...(isExternal ? { target: "_blank", rel: "noreferrer" } : {})}
               >
                 {item.title}
