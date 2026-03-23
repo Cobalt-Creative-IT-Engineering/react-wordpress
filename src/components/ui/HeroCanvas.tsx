@@ -1,19 +1,9 @@
 import { useEffect, useRef } from "react";
 
-// ─── Palette de base (rouge-orange-rose-magenta) ──────────────────────────────
 const BASE_PALETTE: [number, number, number][] = [
-  [252, 36,  0],
-  [236, 118, 39],
-  [226, 67,  50],
-  [252, 72,  170],
-  [238, 55,  27],
-  [233, 147, 236],
-  [244, 77,  105],
-  [240, 95,  60],
-  [248, 54,  120],
-  [220, 90,  140],
-  [250, 110, 200],
-  [228, 130, 210],
+  [252, 36,  0],  [236, 118, 39], [226, 67,  50],  [252, 72,  170],
+  [238, 55,  27], [233, 147, 236],[244, 77,  105],  [240, 95,  60],
+  [248, 54,  120],[220, 90,  140],[250, 110, 200],  [228, 130, 210],
 ];
 
 const COLORS = {
@@ -53,11 +43,13 @@ function hexToRgb(hex: string): [number, number, number] {
 
 type GrainParticle = { r: number; g: number; b: number; phase: number; speed: number; base: number; amp: number };
 
-const PIXEL       = 2;
-const DENSITY     = 0.9;
-const INTENSITY   = 0.85;
-const GRAIN_SPEED = 0.04;
-const FRAME_MS    = 250;
+// Grain en pixels larges → moins de cellules à calculer
+const PIXEL        = 3;
+const DENSITY      = 0.85;
+const INTENSITY    = 0.85;
+const GRAIN_SPEED  = 0.04;
+const FRAME_MS     = 250;
+const GRAIN_MS     = 50;   // grain à ~20fps, pas 60fps
 
 export function HeroCanvas() {
   const wrapRef   = useRef<HTMLDivElement>(null);
@@ -73,8 +65,10 @@ export function HeroCanvas() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let fi = 0, t = 0, lastSwitch = 0, rafId = 0;
-    let cols = 0, rows = 0, grainData: GrainParticle[] = [];
+    let fi = 0, t = 0, lastSwitch = 0, lastGrain = 0, rafId = 0;
+    let cols = 0, rows = 0;
+    let grainData: GrainParticle[] = [];
+    let imgData: ImageData | null = null;
 
     function rebuildGrain() {
       cols = Math.ceil(canvas!.width  / PIXEL);
@@ -83,8 +77,16 @@ export function HeroCanvas() {
       const palette  = [...BASE_PALETTE, ...userRgbs];
       grainData = Array.from({ length: cols * rows }, () => {
         const c = palette[Math.floor(Math.random() * palette.length)];
-        return { r: c[0], g: c[1], b: c[2], phase: Math.random() * Math.PI * 2, speed: 0.3 + Math.random() * 2.0, base: 0.15 + Math.random() * 0.5, amp: 0.06 + Math.random() * 0.28 };
+        return {
+          r: c[0], g: c[1], b: c[2],
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.3 + Math.random() * 2.0,
+          base:  0.15 + Math.random() * 0.5,
+          amp:   0.06 + Math.random() * 0.28,
+        };
       });
+      // Réalloue ImageData seulement quand les dimensions changent
+      imgData = ctx!.createImageData(canvas!.width, canvas!.height);
     }
 
     function resize() {
@@ -94,25 +96,52 @@ export function HeroCanvas() {
     }
 
     function applyBg() {
-      bgEl!.style.cssText = `position:absolute;inset:-35%;width:170%;height:170%;filter:blur(52px) contrast(1.2);background:${buildGradient(FRAME_CONFIGS[fi])};background-color:${COLORS.base}`;
+      bgEl!.style.cssText =
+        `position:absolute;inset:-35%;width:170%;height:170%;` +
+        `filter:blur(52px) contrast(1.2);` +
+        `background:${buildGradient(FRAME_CONFIGS[fi])};` +
+        `background-color:${COLORS.base}`;
     }
 
     function loop(ts: number) {
+      // Gradient : 4fps (250ms)
       if (ts - lastSwitch >= FRAME_MS) {
         fi = (fi + 1) % FRAME_CONFIGS.length;
         applyBg();
         lastSwitch = ts;
       }
-      t += GRAIN_SPEED;
-      ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
-      for (let i = 0; i < grainData.length; i++) {
-        if (Math.random() > DENSITY) continue;
-        const g = grainData[i];
-        const a = Math.max(0, Math.min(1, (g.base + Math.sin(t * g.speed + g.phase) * g.amp) * INTENSITY));
-        if (a < 0.05) continue;
-        ctx!.fillStyle = `rgba(${g.r},${g.g},${g.b},${a})`;
-        ctx!.fillRect((i % cols) * PIXEL, Math.floor(i / cols) * PIXEL, PIXEL, PIXEL);
+
+      // Grain : 20fps (50ms) — ImageData au lieu de fillRect × N
+      if (ts - lastGrain >= GRAIN_MS && imgData) {
+        t += GRAIN_SPEED;
+        const data = imgData.data;
+        data.fill(0); // clear en une opération native
+
+        for (let i = 0; i < grainData.length; i++) {
+          if (Math.random() > DENSITY) continue;
+          const g = grainData[i];
+          const a = Math.max(0, Math.min(1,
+            (g.base + Math.sin(t * g.speed + g.phase) * g.amp) * INTENSITY
+          ));
+          if (a < 0.05) continue;
+          const alpha = Math.round(a * 255);
+          const px = (i % cols) * PIXEL;
+          const py = Math.floor(i / cols) * PIXEL;
+          for (let dy = 0; dy < PIXEL; dy++) {
+            const row = (py + dy) * canvas!.width;
+            for (let dx = 0; dx < PIXEL; dx++) {
+              const idx = (row + px + dx) * 4;
+              data[idx]     = g.r;
+              data[idx + 1] = g.g;
+              data[idx + 2] = g.b;
+              data[idx + 3] = alpha;
+            }
+          }
+        }
+        ctx!.putImageData(imgData, 0, 0);
+        lastGrain = ts;
       }
+
       rafId = requestAnimationFrame(loop);
     }
 
