@@ -41,15 +41,57 @@ function hexToRgb(hex: string): [number, number, number] {
   return [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)];
 }
 
-type GrainParticle = { r: number; g: number; b: number; phase: number; speed: number; base: number; amp: number };
+// Paramètres grain
+const N_BAKED   = 8;    // nombre de frames pré-calculées
+const PIXEL     = 2;    // taille d'un grain en px (sur l'offscreen basse résolution)
+const GRAIN_RES = 0.25; // résolution de l'offscreen : 25% → drawImage scale ×4
+const DENSITY   = 0.8;
+const INTENSITY = 0.85;
+const FRAME_MS  = 250;  // changement dégradé
+const GRAIN_MS  = 80;   // changement frame grain (~12fps)
 
-// Grain adaptatif : plus fin sur mobile, plus grossier sur desktop
-function getPixelSize(width: number) { return width < 768 ? 2 : 3; }
-const DENSITY      = 0.85;
-const INTENSITY    = 0.85;
-const GRAIN_SPEED  = 0.04;
-const FRAME_MS     = 250;
-const GRAIN_MS     = 50;   // grain à ~20fps, pas 60fps
+/**
+ * Pré-calcule N_BAKED offscreen canvases à basse résolution.
+ * La boucle d'animation n'a plus qu'à faire un drawImage — O(1).
+ */
+function prebakeGrainFrames(w: number, h: number): HTMLCanvasElement[] {
+  const sw = Math.max(1, Math.ceil(w * GRAIN_RES));
+  const sh = Math.max(1, Math.ceil(h * GRAIN_RES));
+  const cols = Math.ceil(sw / PIXEL);
+  const userRgbs = [COLORS.TL, COLORS.TR, COLORS.C, COLORS.BL, COLORS.BR, COLORS.base].map(hexToRgb);
+  const palette  = [...BASE_PALETTE, ...userRgbs];
+
+  return Array.from({ length: N_BAKED }, () => {
+    const oc   = document.createElement("canvas");
+    oc.width   = sw;
+    oc.height  = sh;
+    const octx = oc.getContext("2d")!;
+    const img  = octx.createImageData(sw, sh);
+    const data = img.data;
+
+    const total = Math.ceil(sw / PIXEL) * Math.ceil(sh / PIXEL);
+    for (let i = 0; i < total; i++) {
+      if (Math.random() > DENSITY) continue;
+      const c  = palette[Math.floor(Math.random() * palette.length)];
+      const a  = Math.round((0.15 + Math.random() * 0.6) * INTENSITY * 255);
+      const px = (i % cols) * PIXEL;
+      const py = Math.floor(i / cols) * PIXEL;
+      for (let dy = 0; dy < PIXEL; dy++) {
+        const row = (py + dy) * sw;
+        for (let dx = 0; dx < PIXEL; dx++) {
+          const idx = (row + px + dx) * 4;
+          if (idx + 3 >= data.length) continue;
+          data[idx]     = c[0];
+          data[idx + 1] = c[1];
+          data[idx + 2] = c[2];
+          data[idx + 3] = a;
+        }
+      }
+    }
+    octx.putImageData(img, 0, 0);
+    return oc;
+  });
+}
 
 export function HeroCanvas() {
   const wrapRef   = useRef<HTMLDivElement>(null);
@@ -65,92 +107,48 @@ export function HeroCanvas() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let fi = 0, t = 0, lastSwitch = 0, lastGrain = 0, rafId = 0;
-    let cols = 0, rows = 0, pixel = 3;
-    let grainData: GrainParticle[] = [];
-    let imgData: ImageData | null = null;
+    let fi = 0, gfi = 0;
+    let lastSwitch = 0, lastGrain = 0, rafId = 0;
+    let bakedFrames: HTMLCanvasElement[] = [];
 
-    function rebuildGrain() {
-      pixel = getPixelSize(canvas!.width);
-      cols = Math.ceil(canvas!.width  / pixel);
-      rows = Math.ceil(canvas!.height / pixel);
-      const userRgbs = [COLORS.TL, COLORS.TR, COLORS.C, COLORS.BL, COLORS.BR, COLORS.base].map(hexToRgb);
-      const palette  = [...BASE_PALETTE, ...userRgbs];
-      grainData = Array.from({ length: cols * rows }, () => {
-        const c = palette[Math.floor(Math.random() * palette.length)];
-        return {
-          r: c[0], g: c[1], b: c[2],
-          phase: Math.random() * Math.PI * 2,
-          speed: 0.3 + Math.random() * 2.0,
-          base:  0.15 + Math.random() * 0.5,
-          amp:   0.06 + Math.random() * 0.28,
-        };
-      });
-      // Réalloue ImageData seulement quand les dimensions changent
-      imgData = ctx!.createImageData(canvas!.width, canvas!.height);
-    }
-
-    function resize() {
+    function rebuild() {
       canvas!.width  = wrap!.offsetWidth;
       canvas!.height = wrap!.offsetHeight;
-      rebuildGrain();
+      bakedFrames = prebakeGrainFrames(canvas!.width, canvas!.height);
     }
 
     function applyBg() {
       bgEl!.style.cssText =
         `position:absolute;inset:-35%;width:170%;height:170%;` +
-        `filter:blur(52px) contrast(1.2);` +
+        `filter:blur(40px) contrast(1.2);` +
         `background:${buildGradient(FRAME_CONFIGS[fi])};` +
         `background-color:${COLORS.base}`;
     }
 
     function loop(ts: number) {
-      // Gradient : 4fps (250ms)
+      // Dégradé CSS : 4fps
       if (ts - lastSwitch >= FRAME_MS) {
         fi = (fi + 1) % FRAME_CONFIGS.length;
         applyBg();
         lastSwitch = ts;
       }
 
-      // Grain : 20fps (50ms) — ImageData au lieu de fillRect × N
-      if (ts - lastGrain >= GRAIN_MS && imgData) {
-        t += GRAIN_SPEED;
-        const data = imgData.data;
-        data.fill(0); // clear en une opération native
-
-        for (let i = 0; i < grainData.length; i++) {
-          if (Math.random() > DENSITY) continue;
-          const g = grainData[i];
-          const a = Math.max(0, Math.min(1,
-            (g.base + Math.sin(t * g.speed + g.phase) * g.amp) * INTENSITY
-          ));
-          if (a < 0.05) continue;
-          const alpha = Math.round(a * 255);
-          const px = (i % cols) * pixel;
-          const py = Math.floor(i / cols) * pixel;
-          for (let dy = 0; dy < pixel; dy++) {
-            const row = (py + dy) * canvas!.width;
-            for (let dx = 0; dx < pixel; dx++) {
-              const idx = (row + px + dx) * 4;
-              data[idx]     = g.r;
-              data[idx + 1] = g.g;
-              data[idx + 2] = g.b;
-              data[idx + 3] = alpha;
-            }
-          }
-        }
-        ctx!.putImageData(imgData, 0, 0);
+      // Grain : drawImage d'une frame pré-calculée — O(1)
+      if (ts - lastGrain >= GRAIN_MS && bakedFrames.length) {
+        gfi = (gfi + 1) % N_BAKED;
+        ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
+        ctx!.drawImage(bakedFrames[gfi], 0, 0, canvas!.width, canvas!.height);
         lastGrain = ts;
       }
 
       rafId = requestAnimationFrame(loop);
     }
 
-    resize();
+    rebuild();
     applyBg();
     rafId = requestAnimationFrame(loop);
 
-    const ro = new ResizeObserver(resize);
+    const ro = new ResizeObserver(rebuild);
     ro.observe(wrap);
 
     return () => {
