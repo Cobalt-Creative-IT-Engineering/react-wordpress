@@ -89,7 +89,7 @@ export function HeroCanvas() {
     if (!wrap || !bgEl || !canvas) return;
 
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const pixel    = isMobile ? 2 : 3;
+    const pixel    = isMobile ? 1 : 2;
     const ctx      = canvas.getContext("2d");
 
     let fi = 0, gfi = 0;
