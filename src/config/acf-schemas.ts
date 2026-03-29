@@ -94,6 +94,13 @@ export const ActualiteACF = {
   contenu: "contenu",   // wysiwyg — ⚠ show_in_rest: 1 requis
 } as const;
 
+// ─── Options page : page-attente ──────────────────────────────────────────
+export const PageAttenteACF = {
+  date:         "date_daffichage_du_site",  // date_picker d.m.Y H:i
+  presentation: "texte_de_presentation",    // wysiwyg
+  contactBlocs: "contact_blocs",            // repeater → { titre, email, tel, adresse }
+} as const;
+
 // ─── Type utilitaire ──────────────────────────────────────────────────────
 
 /** Type d'un schéma ACF générique */

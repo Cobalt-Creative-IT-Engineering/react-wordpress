@@ -59,8 +59,10 @@ export function LeFestivalPage() {
 
   const equipeItems       = arr<EquipeMembre>(fest?.leFestivalEquipe?.equipe);
   const contactBlocs      = arr<ContactBloc>(fest?.leFestivalContact?.contactBlocs);
-  const presseLiens       = arr<LienItem>(fest?.leFestivalPresse?.presseLiens);
-  const photographesLiens = arr<LienItem>(fest?.leFestivalPresse?.photographesLiens);
+  const presseLiens        = arr<LienItem>(fest?.leFestivalPresse?.presseLiens);
+  const photographesLiens  = arr<LienItem>(fest?.leFestivalPresse?.photographesLiens);
+  const presseTexte        = str(fest?.leFestivalPresse?.textePresse);
+  const photographeTexte   = str(fest?.leFestivalPresse?.textePhotographe);
 
   const { data: archives }       = useCPT<AncieneEditionEntry>("ancienne-edition", { perPage: 30, orderby: "title", order: "desc" });
   const { data: partenaires }    = useCPT<PartenaireEntry>("partenaire", { perPage: 50 });
@@ -183,34 +185,40 @@ export function LeFestivalPage() {
           )}
 
           {/* ── Presse ──────────────────────────────────────────────────── */}
-          {presseLiens && (
+          {(presseLiens || presseTexte) && (
             <div id="presse" className="ip-section">
               <h2>Presse</h2>
-              <ul>
-                {presseLiens.map((lien, i) => (
-                  <li key={i}>
-                    <a href={lien.url} target="_blank" rel="noreferrer" className="ip-link-arrow">
-                      → {lien.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              {presseTexte && <WPContent html={presseTexte} />}
+              {presseLiens && (
+                <ul>
+                  {presseLiens.map((lien, i) => (
+                    <li key={i}>
+                      <a href={lien.url} target="_blank" rel="noreferrer" className="ip-link-arrow">
+                        → {lien.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
 
           {/* ── Photographes ────────────────────────────────────────────── */}
-          {photographesLiens && (
+          {(photographesLiens || photographeTexte) && (
             <div id="photographes" className="ip-section">
               <h2>Photographes</h2>
-              <ul>
-                {photographesLiens.map((lien, i) => (
-                  <li key={i}>
-                    <a href={lien.url} target="_blank" rel="noreferrer" className="ip-link-arrow">
-                      → {lien.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              {photographeTexte && <WPContent html={photographeTexte} />}
+              {photographesLiens && (
+                <ul>
+                  {photographesLiens.map((lien, i) => (
+                    <li key={i}>
+                      <a href={lien.url} target="_blank" rel="noreferrer" className="ip-link-arrow">
+                        → {lien.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
 

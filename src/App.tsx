@@ -16,7 +16,9 @@ import { ACTIVE_THEME }      from "./config/site";
 import { THEMES }            from "./themes/index";
 import { Decorations }       from "./themes/Decorations";
 import { initMeta, setPageMeta } from "./lib/meta";
-import { prefetchFestivalData } from "./hooks/useWordPress";
+import { prefetchFestivalData, useGraphQLPageAttente } from "./hooks/useWordPress";
+import { PageAttentePage } from "./pages/PageAttentePage";
+import { FORCE_WAITING_PAGE } from "./config/site";
 
 // ─── Application du thème ─────────────────────────────────────────────────────
 const _theme = THEMES[ACTIVE_THEME];
@@ -75,8 +77,19 @@ function getPageLabel(route: string): string | undefined {
   return undefined;
 }
 
+
 export default function App() {
   const { route, slug, anchor } = useRoute();
+  const { data: waitData, status: waitStatus, refetch: refetchWait } = useGraphQLPageAttente();
+
+  // Calcul anticipé de displayDate (nécessaire pour l'effet ci-dessous)
+  const waitFields     = waitData?.pageDattente?.pageAttente ?? null;
+  const displayDateStr = waitFields?.dateDaffichageDuSite ?? null;
+  // ACF date_time_picker retourne l'heure locale avec +00:00 (offset incorrect).
+  // On strip le timezone pour que JS parse en heure locale du navigateur.
+  const displayDate = displayDateStr
+    ? new Date(displayDateStr.replace(/[+-]\d{2}:\d{2}$/, ""))
+    : null;
 
   // Infos du site WordPress (une seule fois) → initialise le module meta
   useEffect(() => {
@@ -102,6 +115,23 @@ export default function App() {
     }
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [route, anchor]);
+
+  // Vide le cache et re-fetch exactement quand la date d'ouverture arrive.
+  // Évite qu'un user chargé avant la date reste bloqué pendant toute la durée du cache.
+  useEffect(() => {
+    if (!displayDate) return;
+    const msUntil = displayDate.getTime() - Date.now();
+    if (msUntil <= 0) return;
+    const t = setTimeout(() => {
+      sessionStorage.removeItem("wp:gql-page-attente");
+      refetchWait();
+    }, msUntil);
+    return () => clearTimeout(t);
+  }, [displayDate, refetchWait]);
+  if (!FORCE_WAITING_PAGE && waitStatus === "loading") return null;
+  if (FORCE_WAITING_PAGE || (displayDate !== null && new Date() < displayDate)) {
+    return <PageAttentePage fields={waitFields} />;
+  }
 
   return (
     <div className="app">

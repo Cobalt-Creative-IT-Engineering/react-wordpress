@@ -47,12 +47,12 @@ function sessionWrite(key: string, data: unknown): void {
   } catch { /* quota exceeded ou private mode : on ignore */ }
 }
 
-function sessionRead<T>(key: string): T | null {
+function sessionRead<T>(key: string, staleMs = SESSION_STALE_MS): T | null {
   try {
     const raw = sessionStorage.getItem(SESSION_PREFIX + key);
     if (!raw) return null;
     const { v, t } = JSON.parse(raw) as { v: unknown; t: number };
-    if (Date.now() - t > SESSION_STALE_MS) return null;
+    if (Date.now() - t > staleMs) return null;
     if (v && typeof v === "object" && (v as Record<string, unknown>).__map === true) {
       return new Map((v as { entries: [unknown, unknown][] }).entries) as unknown as T;
     }
@@ -64,11 +64,12 @@ function sessionRead<T>(key: string): T | null {
 
 function useFetch<T>(
   fetcher: () => Promise<T>,
-  options: { cacheKey?: string; staleMs?: number; persist?: boolean } = {}
+  options: { cacheKey?: string; staleMs?: number; persist?: boolean; persistStaleMs?: number } = {}
 ) {
-  const cacheKey = options.cacheKey;
-  const staleMs  = options.staleMs ?? DEFAULT_STALE_MS;
-  const persist  = options.persist ?? false;
+  const cacheKey       = options.cacheKey;
+  const staleMs        = options.staleMs ?? DEFAULT_STALE_MS;
+  const persist        = options.persist ?? false;
+  const persistStaleMs = options.persistStaleMs;
   const fetcherRef = useRef(fetcher);
 
   useEffect(() => {
@@ -81,9 +82,9 @@ function useFetch<T>(
     const mem = memoryCache.get(cacheKey);
     if (mem) return mem.data as T;
     // 2. sessionStorage (survit aux reloads)
-    if (persist) return sessionRead<T>(cacheKey);
+    if (persist) return sessionRead<T>(cacheKey, persistStaleMs);
     return null;
-  }, [cacheKey, persist]);
+  }, [cacheKey, persist, persistStaleMs]);
 
   const [state, setState] = useState<FetchState<T>>({
     status:     initialCached ? "success" : "loading",
@@ -310,15 +311,14 @@ const GQL_ALL_OPTIONS = `
       leFestivalEquipe {
         equipe { nom role photo { node { sourceUrl altText } } }
       }
-      leFestivalArchives {
-        archives { annee image { node { sourceUrl altText } } }
-      }
       leFestivalContact {
         contactBlocs { titre email tel adresse }
       }
       leFestivalPresse {
         presseLiens { label url }
         photographesLiens { label url }
+        textePresse
+        textePhotographe
       }
     }
     informationsPratiques {
@@ -393,6 +393,36 @@ const GQL_PROG_OPTIONS = `
     }
   }
 `;
+
+const GQL_PAGE_ATTENTE = `
+  query GetPageAttente {
+    pageDattente {
+      pageAttente {
+        dateDaffichageDuSite
+        texteDePresentation
+      }
+    }
+  }
+`;
+
+/**
+ * Charge les champs de la page d'attente depuis WPGraphQL.
+ * Échoue silencieusement si la page n'est pas encore configurée dans WP.
+ */
+export function useGraphQLPageAttente() {
+  return useFetch<GQLAllOptions>(
+    () => graphqlFetch<GQLAllOptions>(GQL_PAGE_ATTENTE)
+      .then((data) => {
+        if (import.meta.env.DEV) console.debug("[GQL pageAttente] response:", data);
+        return data;
+      })
+      .catch((e) => {
+        if (import.meta.env.DEV) console.warn("[GQL pageAttente] error:", e);
+        return {} as GQLAllOptions;
+      }),
+    { cacheKey: "gql-page-attente", staleMs: 60_000, persist: true, persistStaleMs: 2 * 60_000 }
+  );
+}
 
 /**
  * Charge les options pages Le Festival + Infos Pratiques.

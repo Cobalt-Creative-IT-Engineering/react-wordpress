@@ -171,18 +171,16 @@ export type GQLLeFestival = {
   leFestivalEquipe?: {
     equipe?: Array<{ nom: string; role?: string; photo?: { node: GQLImage } | null }>;
   };
-  /** group → graphql_field_name: leFestivalArchives — sous-champ image (pas photo) */
-  leFestivalArchives?: {
-    archives?: Array<{ annee: string; image?: { node: GQLImage } | null }>;
-  };
   /** group → graphql_field_name: leFestivalContact */
   leFestivalContact?: {
     contactBlocs?: Array<{ titre: string; email?: string; tel?: string; adresse?: string }>;
   };
   /** group → graphql_field_name: leFestivalPresse */
   leFestivalPresse?: {
-    presseLiens?:       Array<{ label: string; url: string }>;
-    photographesLiens?: Array<{ label: string; url: string }>;
+    presseLiens?:        Array<{ label: string; url: string }>;
+    photographesLiens?:  Array<{ label: string; url: string }>;
+    textePresse?:        string;
+    textePhotographe?:   string;
   };
 };
 
@@ -240,6 +238,12 @@ export type GQLConditionsGenerales = {
   };
 };
 
+/** Options Page "PageAttente" — graphql_type_name: PageAttente, menu_slug: page-dattente */
+export type GQLPageAttente = {
+  dateDaffichageDuSite?: string;  // date_time_picker, return_format: d.m.Y H:i
+  texteDePresentation?:  string;  // wysiwyg
+};
+
 export type GQLAllOptions = {
   leFestival?:            GQLLeFestival;
   informationsPratiques?: GQLInfosPratiques;
@@ -247,4 +251,8 @@ export type GQLAllOptions = {
   billetterie?:           GQLBilletterie;
   mentionsLegales?:       GQLMentionsLegales;
   conditionsGenerales?:   GQLConditionsGenerales;
+  /** graphql_type_name: PageDattente → root field: pageDattente */
+  pageDattente?: {
+    pageAttente?: GQLPageAttente;
+  };
 };
